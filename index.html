@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MSP2 MOD</title>
+  <title>MSP2 SOFT</title>
   <style>
     html, body {
       margin: 0;
@@ -23,10 +23,10 @@
       left: 50%;
       transform: translate(-50%, -50%) scale(0.6);
       background: rgba(0, 0, 30, 0.6);
-      border: 1px solid rgba(150, 150, 255, 0.4); /* hafif beyaz-mavi karışımı */
+      border: 1px solid rgba(150, 150, 255, 0.4);
       border-radius: 12px;
       padding: 20px 40px;
-      box-shadow: 0 0 20px rgba(180, 200, 255, 0.3); /* daha yumuşak ton */
+      box-shadow: 0 0 20px rgba(180, 200, 255, 0.3);
       color: #9abfff;
       text-align: center;
       backdrop-filter: blur(6px);
@@ -39,7 +39,7 @@
       font-size: 28px;
       font-weight: 600;
       letter-spacing: 1px;
-      background: linear-gradient(to right, #9abfff, #6effb2); /* mavi -> yeşil */
+      background: linear-gradient(to right, #9abfff, #6effb2);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
     }
@@ -55,7 +55,7 @@
       margin-top: 20px;
       padding: 10px 25px;
       font-size: 16px;
-      background: linear-gradient(to right, #6e9aff, #4db89e); /* riyah tonları */
+      background: linear-gradient(to right, #6e9aff, #4db89e);
       color: white;
       border: none;
       border-radius: 6px;
@@ -66,9 +66,9 @@
     }
 
     .bookmark-btn:hover {
-      background: linear-gradient(to right, #4db89e, #6e9aff); /* yumuşak geçiş */
+      background: linear-gradient(to right, #4db89e, #6e9aff);
       transform: scale(1.05);
-      box-shadow: 0 0 15px rgba(0, 139, 255, 0.6); /* yumuşak gölge */
+      box-shadow: 0 0 15px rgba(0, 139, 255, 0.6);
     }
 
     @keyframes appear {
@@ -86,11 +86,12 @@
 <body>
   <canvas id="starfield"></canvas>
   <div class="overlay">
-    <h1>MSP2 Tool</h1>
-    <p class="subtext">Now you can do everything comfortably with the improved tool, no need for Charles.</p>
-    <!-- Bookmark Button -->
-    <a href="javascript:$.getScript('https://cdn.jsdelivr.net/gh/palacejs/msp@refs/heads/main/verify.js')" class="bookmark-btn">MSP2 TOOL</a>
+    <h1>MSP2 Soft Shop</h1>
+    <p class="subtext">Now you can do everything comfortably with the improved tool. If nothing happens, install <a href="https://violentmonkey.github.io/get-it/" target="_blank" style="color:#6effb2;">Violentmonkey</a> first.</p>
+    <!-- Violentmonkey UserScript Yükleme Butonu -->
+    <a href="https://cdn.jsdelivr.net/gh/palacejs/soft@refs/heads/main/msp2softs.user.js" class="bookmark-btn">Install Script</a>
   </div>
+
   <script>
     const canvas = document.getElementById('starfield');
     const ctx = canvas.getContext('2d');
@@ -106,12 +107,12 @@
     class Star {
       constructor() {
         this.x = Math.random() * canvas.width;
-    this.y = Math.random() * canvas.height;
-    this.vx = (Math.random() - 0.5) * 0.2;
-    this.vy = (Math.random() - 0.5) * 0.2;
-    this.radius = Math.random() * 1 + 1; // Boyut arttı
-    this.alpha = Math.random() * 0.5 + 0.5; // Daha görünür alpha
-    this.alphaChange = 0.003 + Math.random() * 0.00002;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 0.2;
+        this.vy = (Math.random() - 0.5) * 0.2;
+        this.radius = Math.random() * 1 + 1;
+        this.alpha = Math.random() * 0.5 + 0.5;
+        this.alphaChange = 0.003 + Math.random() * 0.00002;
       }
       update() {
         this.x += this.vx;
