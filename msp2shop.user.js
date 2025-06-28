@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         MSP2 Soft Shop
-// @description  Free Soft - Unlock shop items on MSP2
 // @namespace    https://msp2s.pages.dev/
-// @version      1.0
+// @version      1.2.0
+// @description  Free Soft - Unlock shop items on MSP2
 // @match        https://moviestarplanet2.com/
 // @grant        GM_info
 // @grant        GM_xmlhttpRequest
@@ -11,8 +11,6 @@
 // @grant        GM_getValue
 // @grant        GM_deleteValue
 // @grant        unsafeWindow
-// @inject-into  page
-// @run-at       document-start
 // ==/UserScript==
 
 function _0x26f910(_0xbba328, _0x38b55d, _0x57a799, _0x264317, _0x43c119) {
