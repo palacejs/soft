@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MSP2 MOD</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #000a1b 1%, #000000 70%);
+      font-family: Arial, sans-serif;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.6);
+      background: rgba(0, 0, 30, 0.6);
+      border: 1px solid rgba(150, 150, 255, 0.4); /* hafif beyaz-mavi karışımı */
+      border-radius: 12px;
+      padding: 20px 40px;
+      box-shadow: 0 0 20px rgba(180, 200, 255, 0.3); /* daha yumuşak ton */
+      color: #9abfff;
+      text-align: center;
+      backdrop-filter: blur(6px);
+      opacity: 0;
+      animation: appear 1.4s ease-out forwards;
+    }
+
+    .overlay h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      background: linear-gradient(to right, #9abfff, #6effb2); /* mavi -> yeşil */
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtext {
+      margin-top: 12px;
+      font-size: 14px;
+      color: #c0d7ff;
+      max-width: 300px;
+    }
+
+    .bookmark-btn {
+      margin-top: 20px;
+      padding: 10px 25px;
+      font-size: 16px;
+      background: linear-gradient(to right, #6e9aff, #4db89e); /* riyah tonları */
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 600;
+      transition: background 0.5s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .bookmark-btn:hover {
+      background: linear-gradient(to right, #4db89e, #6e9aff); /* yumuşak geçiş */
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(0, 139, 255, 0.6); /* yumuşak gölge */
+    }
+
+    @keyframes appear {
+      0% {
+        transform: translate(-50%, -50%) scale(0.6);
+        opacity: 0;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="starfield"></canvas>
+  <div class="overlay">
+    <h1>MSP2 Tool</h1>
+    <p class="subtext">Now you can do everything comfortably with the improved tool, no need for Charles.</p>
+    <!-- Bookmark Button -->
+    <a href="javascript:$.getScript('https://cdn.jsdelivr.net/gh/palacejs/msp@refs/heads/main/verify.js')" class="bookmark-btn">MSP2 TOOL</a>
+  </div>
+  <script>
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const stars = [];
+    const connections = {};
+    const STAR_COUNT = 80;
+    const MAX_DISTANCE = 120;
+
+    class Star {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.vx = (Math.random() - 0.5) * 0.2;
+    this.vy = (Math.random() - 0.5) * 0.2;
+    this.radius = Math.random() * 1 + 1; // Boyut arttı
+    this.alpha = Math.random() * 0.5 + 0.5; // Daha görünür alpha
+    this.alphaChange = 0.003 + Math.random() * 0.00002;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.x <= 0 || this.x >= canvas.width) this.vx *= -1;
+        if (this.y <= 0 || this.y >= canvas.height) this.vy *= -1;
+
+        this.alpha += this.alphaChange;
+        if (this.alpha >= 0.5 || this.alpha <= 0.1) this.alphaChange *= -1;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0, 0, 139, ${this.alpha})`;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = `rgba(0, 0, 139, ${this.alpha})`;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+    }
+
+    for (let i = 0; i < STAR_COUNT; i++) {
+      stars.push(new Star());
+    }
+
+    function drawLines() {
+      for (let i = 0; i < stars.length; i++) {
+        for (let j = i + 1; j < stars.length; j++) {
+          const dx = stars[i].x - stars[j].x;
+          const dy = stars[i].y - stars[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const key = `${i}-${j}`;
+
+          if (!connections[key]) {
+            connections[key] = { alpha: 0 };
+          }
+
+          const conn = connections[key];
+          const targetAlpha = dist < MAX_DISTANCE ? 0.4 - (dist / MAX_DISTANCE * 0.4) : 0;
+
+          if (conn.alpha < targetAlpha) {
+            conn.alpha += 0.01;
+            if (conn.alpha > targetAlpha) conn.alpha = targetAlpha;
+          } else {
+            conn.alpha -= 0.01;
+            if (conn.alpha < 0) conn.alpha = 0;
+          }
+
+          if (conn.alpha > 0) {
+            ctx.beginPath();
+            ctx.moveTo(stars[i].x, stars[i].y);
+            ctx.lineTo(stars[j].x, stars[j].y);
+            ctx.strokeStyle = `rgba(0, 0, 139, ${conn.alpha})`;
+            ctx.lineWidth = 0.6;
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(star => {
+        star.update();
+        star.draw();
+      });
+      drawLines();
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html>
