@@ -21,22 +21,24 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) scale(0.6);
+      transform: translate(-50%, -50%);
       background: rgba(0, 0, 30, 0.6);
       border: 1px solid rgba(150, 150, 255, 0.4);
       border-radius: 12px;
-      padding: 20px 40px;
+      padding: 20px 30px;
       box-shadow: 0 0 20px rgba(180, 200, 255, 0.3);
       color: #9abfff;
       text-align: center;
       backdrop-filter: blur(6px);
       opacity: 0;
       animation: appear 1.4s ease-out forwards;
+      width: 90%;
+      max-width: 400px;
     }
 
     .overlay h1 {
       margin: 0;
-      font-size: 28px;
+      font-size: 24px;
       font-weight: 600;
       letter-spacing: 1px;
       background: linear-gradient(to right, #9abfff, #6effb2);
@@ -48,13 +50,15 @@
       margin-top: 12px;
       font-size: 14px;
       color: #c0d7ff;
-      max-width: 300px;
     }
 
-    .bookmark-btn {
-      margin-top: 20px;
+    .bookmark-btn,
+    .discord-btn {
+      display: block;
+      width: 87.5%;
+      margin-top: 15px;
       padding: 10px 25px;
-      font-size: 16px;
+      font-size: 15px;
       background: linear-gradient(to right, #6e9aff, #4db89e);
       color: white;
       border: none;
@@ -65,7 +69,8 @@
       transition: background 0.5s ease, transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .bookmark-btn:hover {
+    .bookmark-btn:hover,
+    .discord-btn:hover {
       background: linear-gradient(to right, #4db89e, #6e9aff);
       transform: scale(1.05);
       box-shadow: 0 0 15px rgba(0, 139, 255, 0.6);
@@ -87,17 +92,30 @@
   <canvas id="starfield"></canvas>
   <div class="overlay">
     <h1>MSP2 Soft Shop</h1>
-    <p class="subtext">Now you can do everything comfortably with the improved tool. If nothing happens, install <a href="https://violentmonkey.github.io/get-it/" target="_blank" style="color:#6effb2;">Violentmonkey</a> first.</p>
-    <!-- Violentmonkey UserScript Yükleme Butonu -->
-    <a href="https://cdn.jsdelivr.net/gh/palacejs/soft@refs/heads/main/msp2soft.shop.user.js" class="bookmark-btn">Install Script</a>
+    <p class="subtext">
+      Now you can do everything comfortably with the improved tool.
+      If nothing happens, install
+      <a href="https://violentmonkey.github.io/get-it/" target="_blank" style="color:#6effb2;">Violentmonkey</a> first.
+    </p>
+    <a href="https://cdn.jsdelivr.net/gh/palacejs/soft@refs/heads/main/msp2soft.shop.user.js" class="bookmark-btn">
+      Install Script
+    </a>
+    <a href="https://discord.gg/rrMZzc9Kex" class="discord-btn" target="_blank">
+      Join Discord Server
+    </a>
   </div>
 
   <script>
     const canvas = document.getElementById('starfield');
     const ctx = canvas.getContext('2d');
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
 
     const stars = [];
     const connections = {};
@@ -117,10 +135,8 @@
       update() {
         this.x += this.vx;
         this.y += this.vy;
-
         if (this.x <= 0 || this.x >= canvas.width) this.vx *= -1;
         if (this.y <= 0 || this.y >= canvas.height) this.vy *= -1;
-
         this.alpha += this.alphaChange;
         if (this.alpha >= 0.5 || this.alpha <= 0.1) this.alphaChange *= -1;
       }
@@ -146,22 +162,11 @@
           const dy = stars[i].y - stars[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
           const key = `${i}-${j}`;
-
-          if (!connections[key]) {
-            connections[key] = { alpha: 0 };
-          }
-
+          if (!connections[key]) connections[key] = { alpha: 0 };
           const conn = connections[key];
           const targetAlpha = dist < MAX_DISTANCE ? 0.4 - (dist / MAX_DISTANCE * 0.4) : 0;
-
-          if (conn.alpha < targetAlpha) {
-            conn.alpha += 0.01;
-            if (conn.alpha > targetAlpha) conn.alpha = targetAlpha;
-          } else {
-            conn.alpha -= 0.01;
-            if (conn.alpha < 0) conn.alpha = 0;
-          }
-
+          conn.alpha += conn.alpha < targetAlpha ? 0.01 : -0.01;
+          conn.alpha = Math.max(0, Math.min(conn.alpha, targetAlpha));
           if (conn.alpha > 0) {
             ctx.beginPath();
             ctx.moveTo(stars[i].x, stars[i].y);
@@ -185,11 +190,6 @@
     }
 
     animate();
-
-    window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    });
   </script>
 </body>
 </html>
