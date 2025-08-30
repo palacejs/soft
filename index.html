@@ -52,8 +52,7 @@
       color: #c0d7ff;
     }
 
-    .bookmark-btn,
-    .discord-btn {
+    .bookmark-btn {
       display: block;
       width: 87.5%;
       margin-top: 15px;
@@ -69,8 +68,7 @@
       transition: background 0.5s ease, transform 0.3s ease, box-shadow 0.3s ease;
     }
 
-    .bookmark-btn:hover,
-    .discord-btn:hover {
+    .bookmark-btn:hover {
       background: linear-gradient(to right, #4db89e, #6e9aff);
       transform: scale(1.05);
       box-shadow: 0 0 15px rgba(0, 139, 255, 0.6);
@@ -85,6 +83,21 @@
         transform: translate(-50%, -50%) scale(1);
         opacity: 1;
       }
+    }
+
+    /* Bilgi yazısı */
+    .info {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 8px 15px;
+      background: rgba(0, 0, 30, 0.8);
+      color: #9abfff;
+      text-align: center;
+      font-size: 13px;
+      border-top: 1px solid rgba(150, 150, 255, 0.3);
+      backdrop-filter: blur(4px);
     }
   </style>
 </head>
@@ -110,14 +123,20 @@
       Install MSP2 Troll
     </a>
 
-    <a href="https://discord.gg/rrMZzc9Kex" class="discord-btn" target="_blank">
-      Join Discord Server
+    <!-- Yeni ARC MSP butonu -->
+    <a href="https://arc-msp-nhjp.onrender.com/home" class="bookmark-btn" target="_blank">
+      ARC MSP
     </a>
   </div>
 
+  <!-- Bilgi yazısı -->
+  <div class="info">
+    Info: These mods will no longer receive software updates or bug fixes starting from 15.09.2025, but you can continue to use them.
+  </div>
+
   <script>
-    const canvas = document.getElementById('starfield');
-    const ctx = canvas.getContext('2d');
+    let canvas = document.getElementById('starfield');
+    let ctx = canvas.getContext('2d');
 
     function resizeCanvas() {
       canvas.width = window.innerWidth;
