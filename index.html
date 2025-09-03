@@ -120,6 +120,57 @@
       box-shadow: 0 0 15px rgba(0, 139, 255, 0.6);
     }
 
+    /* MSP2 Troll butonuna özel stiller */
+    .bookmark-btn.disabled {
+      background: linear-gradient(to right, #666, #777);
+      cursor: not-allowed;
+      position: relative;
+    }
+
+    .bookmark-btn.disabled:hover {
+      background: linear-gradient(to right, #666, #777);
+      transform: none;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* Bildirim sistemi */
+    .notification {
+      position: fixed;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 40, 0.95);
+      border: 1px solid rgba(150, 150, 255, 0.4);
+      border-radius: 12px;
+      padding: 15px 20px;
+      color: #9abfff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 9999;
+      min-width: 300px;
+      max-width: 90vw;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      transition: all 0.5s ease;
+    }
+
+    .notification.show {
+      top: 20px;
+    }
+
+    .notification-icon {
+      font-size: 20px;
+      color: #6effb2;
+      font-weight: bold;
+    }
+
+    .notification-text {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
     @keyframes appear {
       0% {
         transform: translate(-50%, -50%) scale(0.6);
@@ -238,6 +289,10 @@
         padding: 6px 4px;
         font-size: 11px;
       }
+      .notification {
+        min-width: 250px;
+        font-size: 13px;
+      }
     }
   </style>
 </head>
@@ -260,7 +315,7 @@
     <a href="https://raw.githubusercontent.com/lombard001/soft/refs/heads/main/MSP2.mood.user.js" class="bookmark-btn" id="btnMood">
       Install MSP2 MOOD
     </a>
-    <a href="https://raw.githubusercontent.com/lombard001/soft/refs/heads/main/msp2troll.user.js" class="bookmark-btn" id="btnTroll">
+    <a href="#" class="bookmark-btn disabled" id="btnTroll">
       Install MSP2 Troll
     </a>
     <a href="https://arc-msp-nhjp.onrender.com/home" class="bookmark-btn" target="_blank" id="btnArcMSP">
@@ -270,6 +325,12 @@
 
   <div class="info" id="infoText">
     Info: These mods will no longer receive software updates or bug fixes starting from 15.09.2025, but you can continue to use them.
+  </div>
+
+  <!-- Bildirim elementi -->
+  <div class="notification" id="trollNotification">
+    <div class="notification-icon">ℹ️</div>
+    <div class="notification-text" id="trollNotificationText">MSP2 Troll lisans süresi doldu.</div>
   </div>
 
   <!-- About Modal -->
@@ -424,6 +485,7 @@
         btnTroll: "Install MSP2 Troll",
         btnArcMSP: "ARC MSP",
         info: "Info: These mods will no longer receive software updates or bug fixes starting from 15.09.2025, but you can continue to use them.",
+        trollExpired: "MSP2 Troll license has expired.",
         about: `<p>
             MSP2 MODS is a platform that offers unique utility and customization tools ("mods") for MSP2. 
             The site allows you to install various mods, including Soft Shop, Mood, Troll, and ARC MSP, each providing different features to enhance your MSP2 experience.
@@ -453,6 +515,7 @@
         btnTroll: "Install MSP2 Troll",
         btnArcMSP: "ARC MSP",
         info: "Info: These mods will no longer receive software updates or bug fixes starting from 15.09.2025, but you can continue to use them.",
+        trollExpired: "MSP2 Troll license has expired.",
         about: `<p>
             MSP2 MODS is a platform that offers unique utility and customization tools ("mods") for MSP2. 
             The site allows you to install various mods, including Soft Shop, Mood, Troll, and ARC MSP, each providing different features to enhance your MSP2 experience.
@@ -482,6 +545,7 @@
         btnTroll: "Install MSP2 Troll",
         btnArcMSP: "ARC MSP",
         info: "Info: These mods will no longer receive software updates or bug fixes starting from 15.09.2025, but you can continue to use them.",
+        trollExpired: "MSP2 Troll license has expired.",
         about: `<p>
             MSP2 MODS is a platform that offers unique utility and customisation tools ("mods") for MSP2. 
             The site allows you to install various mods, including Soft Shop, Mood, Troll, and ARC MSP, each providing different features to enhance your MSP2 experience.
@@ -511,6 +575,7 @@
         btnTroll: "Installeer MSP2 Troll",
         btnArcMSP: "ARC MSP",
         info: "Info: Deze mods ontvangen vanaf 15.09.2025 geen software-updates of bugfixes meer, maar je kunt ze blijven gebruiken.",
+        trollExpired: "MSP2 Troll licentie is verlopen.",
         about: `<p>
             MSP2 MODS is een platform dat unieke hulpprogramma's en aanpassingstools ("mods") biedt voor MSP2. 
             De site stelt je in staat om verschillende mods te installeren, waaronder Soft Shop, Mood, Troll en ARC MSP, elk met verschillende functies om je MSP2-ervaring te verbeteren.
@@ -540,6 +605,7 @@
         btnTroll: "Install MSP2 Troll",
         btnArcMSP: "ARC MSP",
         info: "Info: These mods will no longer receive software updates or bug fixes starting from 15.09.2025, but you can continue to use them.",
+        trollExpired: "MSP2 Troll license has expired.",
         about: `<p>
             MSP2 MODS is a platform that offers unique utility and customisation tools ("mods") for MSP2. 
             The site allows you to install various mods, including Soft Shop, Mood, Troll, and ARC MSP, each providing different features to enhance your MSP2 experience.
@@ -569,6 +635,7 @@
         btnTroll: "Installer MSP2 Troll",
         btnArcMSP: "ARC MSP",
         info: "Info: Disse mods vil ikke længere modtage softwareopdateringer eller fejlrettelser fra 15.09.2025, men du kan fortsætte med at bruge dem.",
+        trollExpired: "MSP2 Troll licens er udløbet.",
         about: `<p>
             MSP2 MODS er en platform, der tilbyder unikke værktøjer og tilpasningstools ("mods") til MSP2. 
             Siden giver dig mulighed for at installere forskellige mods, herunder Soft Shop, Mood, Troll og ARC MSP, hver med forskellige funktioner til at forbedre din MSP2-oplevelse.
@@ -598,6 +665,7 @@
         btnTroll: "Installer MSP2 Troll",
         btnArcMSP: "ARC MSP",
         info: "Info : À partir du 15.09.2025, ces mods ne recevront plus de mises à jour ou de corrections, mais vous pouvez continuer à les utiliser.",
+        trollExpired: "La licence MSP2 Troll a expiré.",
         about: `<p>
             MSP2 MODS est une plateforme proposant des outils uniques et de personnalisation ("mods") pour MSP2.<br>
             Vous pouvez installer plusieurs mods comme Soft Shop, Mood, Troll et ARC MSP, chacun offrant des fonctions différentes pour améliorer votre expérience MSP2.
@@ -627,6 +695,7 @@
         btnTroll: "Zainstaluj MSP2 Troll",
         btnArcMSP: "ARC MSP",
         info: "Info: Te mody nie będą już otrzymywać aktualizacji oprogramowania ani poprawek błędów od 15.09.2025, ale możesz nadal z nich korzystać.",
+        trollExpired: "Licencja MSP2 Troll wygasła.",
         about: `<p>
             MSP2 MODS to platforma oferująca unikalne narzędzia użytkowe i personalizacyjne ("mody") dla MSP2. 
             Strona pozwala na instalację różnych modów, w tym Soft Shop, Mood, Troll i ARC MSP, z których każdy zapewnia różne funkcje poprawiające doświadczenie MSP2.
@@ -656,6 +725,7 @@
         btnTroll: "Installera MSP2 Troll",
         btnArcMSP: "ARC MSP",
         info: "Info: Dessa mods kommer inte längre att få mjukvaruuppdateringar eller buggfixar från 15.09.2025, men du kan fortsätta använda dem.",
+        trollExpired: "MSP2 Troll licens har upphört.",
         about: `<p>
             MSP2 MODS är en plattform som erbjuder unika verktyg och anpassningstools ("mods") för MSP2. 
             Webbplatsen låter dig installera olika mods, inklusive Soft Shop, Mood, Troll och ARC MSP, var och en med olika funktioner för att förbättra din MSP2-upplevelse.
@@ -685,6 +755,7 @@
         btnTroll: "Installer MSP2 Troll",
         btnArcMSP: "ARC MSP",
         info: "Info: Disse modene vil ikke lenger motta programvareoppdateringer eller feilrettinger fra 15.09.2025, men du kan fortsette å bruke dem.",
+        trollExpired: "MSP2 Troll lisens har utløpt.",
         about: `<p>
             MSP2 MODS er en plattform som tilbyr unike verktøy og tilpasningsverktøy ("mods") for MSP2. 
             Nettstedet lar deg installere forskjellige mods, inkludert Soft Shop, Mood, Troll og ARC MSP, hver med forskjellige funksjoner for å forbedre din MSP2-opplevelse.
@@ -714,6 +785,7 @@
         btnTroll: "Asenna MSP2 Troll",
         btnArcMSP: "ARC MSP",
         info: "Tiedoksi: Nämä modit eivät enää saa ohjelmistopäivityksiä tai virheiden korjauksia 15.09.2025 alkaen, mutta voit jatkaa niiden käyttöä.",
+        trollExpired: "MSP2 Troll lisenssi on vanhentunut.",
         about: `<p>
             MSP2 MODS on alusta, joka tarjoaa ainutlaatuisia apuohjelmia ja mukautustyökaluja ("modeja") MSP2:lle. 
             Sivusto mahdollistaa erilaisten modien asentamisen, mukaan lukien Soft Shop, Mood, Troll ja ARC MSP, joista jokainen tarjoaa erilaisia ominaisuuksia MSP2-kokemuksesi parantamiseksi.
@@ -743,6 +815,7 @@
         btnTroll: "MSP2 Troll'u Kur",
         btnArcMSP: "ARC MSP",
         info: "Bilgi: Bu modlar 15.09.2025 itibarıyla yazılım güncellemesi veya hata düzeltmesi almayacaktır, ancak kullanmaya devam edebilirsiniz.",
+        trollExpired: "MSP2 Troll lisans süresi doldu.",
         about: `<p>
           MSP2 MODS; MSP2 için özel modlar ve yardımcı araçlar sunan bir platformdur.<br>
           Sitede Soft Shop, Mood, Troll ve ARC MSP gibi çeşitli modları kurabilirsiniz. Her mod, MSP2 deneyiminizi geliştirmek için farklı özellikler sunar.
@@ -772,6 +845,7 @@
         btnTroll: "Instalar MSP2 Troll",
         btnArcMSP: "ARC MSP",
         info: "Info: Estos mods ya no recibirán actualizaciones de software o correcciones de errores a partir del 15.09.2025, pero puedes seguir usándolos.",
+        trollExpired: "La licencia de MSP2 Troll ha expirado.",
         about: `<p>
             MSP2 MODS es una plataforma que ofrece herramientas únicas de utilidad y personalización ("mods") para MSP2. 
             El sitio te permite instalar varios mods, incluyendo Soft Shop, Mood, Troll y ARC MSP, cada uno proporcionando diferentes características para mejorar tu experiencia MSP2.
@@ -786,36 +860,37 @@
             <b>¿Cómo usar?</b> Haz clic en "Instalar" en cualquier mod. Si tu navegador no responde, instala primero <a href="https://violentmonkey.github.io/get-it/" target="_blank" style="color:#6effb2;">Violentmonkey</a>.
           </p>
           <p>
-            <b>Nota:</b> MSP2 MODS no recibirá actualizaciones después del 15.09.2025, pero todos los mods permanecerán disponibles para su uso.
+            <b>Nota:</b> MSP2 MODS no recibirá actualizaciones después del 15.09.2025, pero todos los mods permanecerán disponibles para usar.
           </p>`
       },
       "de-DE": {
         aboutBtn: "Über",
         langBtn: "Sprache",
-        langTitle: "Sprache wählen",
+        langTitle: "Sprache auswählen",
         aboutTitle: "Über MSP2 MODS",
-        subtext: `Mit dem verbesserten Tool kannst du jetzt alles bequem erledigen.<br>
-        Falls nichts passiert, installiere zuerst <a href="https://violentmonkey.github.io/get-it/" target="_blank" style="color:#6effb2;">Violentmonkey</a>.`,
+        subtext: `Jetzt können Sie alles bequem mit dem verbesserten Tool machen.<br>
+        Falls nichts passiert, installieren Sie zuerst <a href="https://violentmonkey.github.io/get-it/" target="_blank" style="color:#6effb2;">Violentmonkey</a>.`,
         btnSoftShop: "MSP2 Soft Shop installieren",
         btnMood: "MSP2 MOOD installieren",
         btnTroll: "MSP2 Troll installieren",
         btnArcMSP: "ARC MSP",
-        info: "Info: Diese Mods erhalten ab dem 15.09.2025 keine Software-Updates oder Bugfixes mehr, aber du kannst sie weiterhin verwenden.",
+        info: "Info: Diese Mods erhalten ab dem 15.09.2025 keine Software-Updates oder Fehlerbehebungen mehr, aber Sie können sie weiterhin verwenden.",
+        trollExpired: "MSP2 Troll Lizenz ist abgelaufen.",
         about: `<p>
             MSP2 MODS ist eine Plattform, die einzigartige Hilfsprogramme und Anpassungstools ("Mods") für MSP2 bietet. 
-            Die Website ermöglicht es dir, verschiedene Mods zu installieren, darunter Soft Shop, Mood, Troll und ARC MSP, die jeweils unterschiedliche Funktionen bieten, um deine MSP2-Erfahrung zu verbessern.
+            Die Seite ermöglicht es Ihnen, verschiedene Mods zu installieren, darunter Soft Shop, Mood, Troll und ARC MSP, die jeweils unterschiedliche Funktionen bieten, um Ihr MSP2-Erlebnis zu verbessern.
           </p>
           <ul>
-            <li><b>Soft Shop:</b> Fügt zusätzliche Shopping-Funktionen zu MSP2 hinzu.</li>
-            <li><b>MOOD:</b> Ermöglicht tägliche Aufgabenerledigung und automatisches Dress-Up-Gameplay.</li>
+            <li><b>Soft Shop:</b> Fügt zusätzliche Einkaufsfunktionen zu MSP2 hinzu.</li>
+            <li><b>MOOD:</b> Ermöglicht das Abschließen täglicher Aufgaben und automatisches Dress-Up-Gameplay.</li>
             <li><b>Troll:</b> Bietet lustige, experimentelle Funktionen für MSP2.</li>
-            <li><b>ARC MSP:</b> Externe fortgeschrittene Mod-Tools für MSP2.</li>
+            <li><b>ARC MSP:</b> Externe erweiterte Mod-Tools für MSP2.</li>
           </ul>
           <p>
-            <b>Wie benutzen?</b> Klicke bei jedem Mod auf "Installieren". Wenn dein Browser nicht reagiert, installiere zuerst <a href="https://violentmonkey.github.io/get-it/" target="_blank" style="color:#6effb2;">Violentmonkey</a>.
+            <b>Wie verwenden?</b> Klicken Sie bei jedem Mod auf "Installieren". Falls Ihr Browser nicht reagiert, installieren Sie zuerst <a href="https://violentmonkey.github.io/get-it/" target="_blank" style="color:#6effb2;">Violentmonkey</a>.
           </p>
           <p>
-            <b>Hinweis:</b> MSP2 MODS wird nach dem 15.09.2025 keine Updates mehr erhalten, aber alle Mods bleiben verfügbar.
+            <b>Hinweis:</b> MSP2 MODS erhält nach dem 15.09.2025 keine Updates mehr, aber alle Mods bleiben weiterhin verfügbar.
           </p>`
       },
       "en-AU": {
@@ -830,6 +905,7 @@
         btnTroll: "Install MSP2 Troll",
         btnArcMSP: "ARC MSP",
         info: "Info: These mods will no longer receive software updates or bug fixes starting from 15.09.2025, but you can continue to use them.",
+        trollExpired: "MSP2 Troll licence has expired.",
         about: `<p>
             MSP2 MODS is a platform that offers unique utility and customisation tools ("mods") for MSP2. 
             The site allows you to install various mods, including Soft Shop, Mood, Troll, and ARC MSP, each providing different features to enhance your MSP2 experience.
@@ -859,6 +935,7 @@
         btnTroll: "Install MSP2 Troll",
         btnArcMSP: "ARC MSP",
         info: "Info: These mods will no longer receive software updates or bug fixes starting from 15.09.2025, but you can continue to use them.",
+        trollExpired: "MSP2 Troll licence has expired.",
         about: `<p>
             MSP2 MODS is a platform that offers unique utility and customisation tools ("mods") for MSP2. 
             The site allows you to install various mods, including Soft Shop, Mood, Troll, and ARC MSP, each providing different features to enhance your MSP2 experience.
@@ -878,55 +955,84 @@
       }
     };
 
-    // Dilleri renderle
-    function renderLanguages(selectedKey) {
-      const langList = document.getElementById('langList');
-      langList.innerHTML = '';
+    // Current language state (default: English)
+    let currentLang = "en-US";
+
+    // MSP2 Troll bildirim fonksiyonu
+    function showTrollNotification() {
+      const notification = document.getElementById('trollNotification');
+      const notificationText = document.getElementById('trollNotificationText');
+      
+      // Mevcut dil çevirisi al
+      const translations = TRANSLATIONS[currentLang];
+      notificationText.textContent = translations.trollExpired;
+      
+      // Bildirimi göster
+      notification.classList.add('show');
+      
+      // 5 saniye sonra gizle
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 5000);
+    }
+
+    // MSP2 Troll butonu için özel event listener
+    document.getElementById('btnTroll').addEventListener('click', function(e) {
+      e.preventDefault();
+      showTrollNotification();
+    });
+
+    // Language functionality
+    function loadLanguage(langKey) {
+      currentLang = langKey;
+      const trans = TRANSLATIONS[langKey];
+      if (!trans) return;
+
+      // Update UI elements
+      document.getElementById('aboutBtnTxt').textContent = trans.aboutBtn;
+      document.getElementById('langBtnTxt').textContent = trans.langBtn;
+      document.getElementById('langTitle').textContent = trans.langTitle;
+      document.getElementById('aboutTitle').textContent = trans.aboutTitle;
+      document.getElementById('subtextMain').innerHTML = trans.subtext;
+      document.getElementById('btnSoftShop').textContent = trans.btnSoftShop;
+      document.getElementById('btnMood').textContent = trans.btnMood;
+      document.getElementById('btnTroll').textContent = trans.btnTroll;
+      document.getElementById('btnArcMSP').textContent = trans.btnArcMSP;
+      document.getElementById('infoText').textContent = trans.info;
+      document.getElementById('aboutText').innerHTML = trans.about;
+
+      // Store in localStorage
+      localStorage.setItem('msp2mods_lang', langKey);
+      closeModal('langModal');
+    }
+
+    function renderLanguageList() {
+      const container = document.getElementById('langList');
+      container.innerHTML = '';
+      
       LANGUAGES.forEach(lang => {
-        const div = document.createElement('div');
-        div.className = 'lang-item' + (lang.key === selectedKey ? ' selected' : '');
-        div.innerHTML = `<span style="font-size:20px;">${lang.flag}</span> ${lang.name}`;
-        div.onclick = () => selectLanguage(lang.key);
-        langList.appendChild(div);
+        const item = document.createElement('div');
+        item.className = `lang-item ${lang.key === currentLang ? 'selected' : ''}`;
+        item.innerHTML = `<span>${lang.flag}</span><span>${lang.name}</span>`;
+        item.onclick = () => loadLanguage(lang.key);
+        container.appendChild(item);
       });
     }
 
-    // Dil seçimi ve sayfa metinlerini güncelle
-    function selectLanguage(langKey) {
-      closeModal('langModal');
-      localStorage.setItem('msp2mods_lang', langKey);
-
-      const t = TRANSLATIONS[langKey] || TRANSLATIONS['en-US'];
-      // Main header hariç tüm metinleri güncelle
-      document.getElementById('aboutBtnTxt').textContent = t.aboutBtn;
-      document.getElementById('langBtnTxt').textContent = t.langBtn;
-      document.getElementById('langTitle').textContent = t.langTitle;
-      document.getElementById('aboutTitle').textContent = t.aboutTitle;
-      document.getElementById('subtextMain').innerHTML = t.subtext;
-      document.getElementById('btnSoftShop').textContent = t.btnSoftShop;
-      document.getElementById('btnMood').textContent = t.btnMood;
-      document.getElementById('btnTroll').textContent = t.btnTroll;
-      document.getElementById('btnArcMSP').textContent = t.btnArcMSP;
-      document.getElementById('infoText').textContent = t.info;
-      document.getElementById('aboutText').innerHTML = t.about;
-      renderLanguages(langKey);
-    }
-
-    // Sayfa açılışında dil seçimini uygula
-    (() => {
-      let langKey = localStorage.getItem('msp2mods_lang') || 'en-US';
-      // Eğer browser locale listede varsa otomatik seç
-      if (!localStorage.getItem('msp2mods_lang')) {
-        const browserLang = navigator.language || navigator.userLanguage;
-        if (LANGUAGES.some(l => l.key === browserLang)) langKey = browserLang;
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load saved language
+      const savedLang = localStorage.getItem('msp2mods_lang');
+      if (savedLang && TRANSLATIONS[savedLang]) {
+        loadLanguage(savedLang);
       }
-      selectLanguage(langKey);
-    })();
+      
+      renderLanguageList();
+    });
 
-    // Dil modalı açıldığında seçili dili göster
+    // Modal open handlers
     document.getElementById('langBtn').onclick = () => {
-      const selectedKey = localStorage.getItem('msp2mods_lang') || 'en-US';
-      renderLanguages(selectedKey);
+      renderLanguageList();
       openModal('langModal');
     };
   </script>
