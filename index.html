@@ -5,79 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MSP2 Tool - OBFX</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>">
 </head>
 <body>
-    <div class="container">
-        <!-- Notifications -->
-        <div id="notificationContainer" class="notification-container"></div>
+    <div id="msp2Panel" class="panel">
+        <div class="panel-header">
+            <h2 id="mainTitle">OBFX</h2>
+        </div>
 
-        <div class="panel">
-            <!-- Header -->
-            <div class="panel-header">
-                <h1>MSP2 Tool - OBFX</h1>
-                <div class="region-selector">
-                    <button id="selectUS" class="region-btn active">US</button>
-                    <button id="selectEU" class="region-btn">EU</button>
-                </div>
-            </div>
+        <div id="tabContainer" class="tab-container">
+            <div class="tab active" data-tab="dailyTask">Daily Task</div>
+            <div class="tab" data-tab="autograph">Autograph</div>
+        </div>
 
-            <!-- Tab Navigation -->
-            <div class="tab-container">
-                <button class="tab active" data-tab="daily">Daily Task</button>
-                <button class="tab" data-tab="autograph">Autograph</button>
-            </div>
-
-            <!-- Daily Tasks Tab -->
-            <div id="dailyTab" class="tab-panel active">
+        <div id="tabContent" class="tab-content">
+            <!-- Daily Task Tab -->
+            <div id="dailyTaskTab" class="tab-panel active">
                 <div class="input-group">
-                    <label>WebSocket Message Data:</label>
-                    <textarea 
-                        id="rawInput" 
-                        placeholder="Paste the WebSocket message here..."
-                        rows="3"
-                    ></textarea>
-                    <div class="button-row">
-                        <button id="saveProfileBtn" class="btn btn-primary">Save</button>
-                        <button id="clearProfileBtn" class="btn btn-secondary">
-                            <span class="icon">🗑️</span>
-                        </button>
+                    <label>Region:</label>
+                    <div class="region-selector">
+                        <button id="selectUS" class="region-btn active">US</button>
+                        <button id="selectEU" class="region-btn">EU</button>
                     </div>
-                    <div id="profileStatus" class="status-text"></div>
                 </div>
 
-                <button id="startDailyTaskBtn" class="btn btn-start" disabled>
-                    <span class="icon">▶️</span>
-                    Start Daily Tasks
-                </button>
+                <div class="input-group">
+                    <label>Access Token:</label>
+                    <div class="input-row">
+                        <input type="text" id="accessTokenInput" placeholder="Enter Access Token">
+                        <button id="saveTokenBtn" class="btn btn-primary">Save</button>
+                    </div>
+                    <div class="input-row">
+                        <span id="tokenStatus" class="status-text"></span>
+                        <button id="clearTokenBtn" class="btn btn-secondary">Clear</button>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Profile ID:</label>
+                    <div class="input-row">
+                        <input type="text" id="profileIdInput" placeholder="Enter Profile ID">
+                        <button id="saveProfileBtn" class="btn btn-primary">Save</button>
+                    </div>
+                    <div class="input-row">
+                        <span id="profileStatus" class="status-text"></span>
+                        <button id="clearProfileBtn" class="btn btn-secondary">Clear</button>
+                    </div>
+                </div>
+
+                <div class="start-button-container">
+                    <button id="startDailyTaskBtn" class="btn btn-start" disabled>Start Daily Tasks</button>
+                </div>
 
                 <div id="progressContainer" class="progress-container" style="display: none;">
                     <div class="progress-bar">
                         <div id="progressBar" class="progress-fill"></div>
                     </div>
-                    <div id="progressText" class="progress-text">0%</div>
-                    <div id="progressStatus" class="progress-status"></div>
+                    <span id="progressText">0%</span>
                 </div>
             </div>
 
             <!-- Autograph Tab -->
-                    <div id="profileStatus" class="status-text" style="margin-top: 8px;">
-                        No profile data saved
+            <div id="autographTab" class="tab-panel">
+                <div class="input-group">
+                    <label>Target Profile ID:</label>
+                    <div class="input-row">
+                        <input type="text" id="targetProfileInput" placeholder="Enter Target Profile ID">
+                        <button id="saveTargetBtn" class="btn btn-primary">Save</button>
+                    </div>
+                    <div class="saved-profiles">
+                        <div class="saved-profiles-header">
+                            <span>Saved Profiles:</span>
+                            <button id="clearAllProfilesBtn" class="btn btn-secondary btn-small">Clear All</button>
+                        </div>
+                        <div id="savedProfilesList" class="profiles-list"></div>
                     </div>
                 </div>
-                    <label>WebSocket Message Data:</label>
-                    <textarea 
-                        id="rawInput" 
-                        placeholder="Paste the WebSocket message here..."
-                        rows="3"
-                        style="width: 100%; padding: 8px; border: 1px solid #555; border-radius: 6px; background: #333; color: #fff; font-size: 12px; resize: vertical;"
-                    ></textarea>
-                <div class="saved-profiles">
-                        <button id="saveProfileBtn" class="btn btn-primary">Save</button>
-                        <button id="clearProfileBtn" class="btn btn-secondary">
-                            <span class="icon">🗑️</span>
-                        </button>
-                        <button id="clearAllProfilesBtn" class="btn btn-secondary btn-small">Clear All</button>
+
+                <div class="input-group">
                     <label>Greeting Type:</label>
                     <select id="greetingTypeSelector" class="select-input">
                         <option value="Autograph">Autograph</option>
@@ -91,25 +95,20 @@
                 </div>
 
                 <div class="button-group">
-                    <button id="startAutographBtn" class="btn btn-start" disabled>
-                        <span class="icon">📤</span>
-                        Start
-                    </button>
-                    <button id="autoSendBtn" class="btn btn-auto" disabled>
-                        <span class="icon">🔄</span>
-                        Auto Send
-                    </button>
+                    <button id="startAutographBtn" class="btn btn-start" disabled>Start</button>
+                    <button id="autoSendBtn" class="btn btn-auto" disabled>Auto Send</button>
                 </div>
 
                 <div id="autographStatus" class="status-display"></div>
             </div>
+        </div>
 
-            <!-- Footer -->
-            <div class="panel-footer">
-                <span>V 1.8.0</span>
-            </div>
+        <div class="panel-footer">
+            <span>V 1.6.0</span>
         </div>
     </div>
+
+    <div id="notificationContainer" class="notification-container"></div>
 
     <script src="script.js"></script>
 </body>
