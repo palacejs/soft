@@ -38,29 +38,18 @@ const PET_IDS = [
 const DAILY_QUEST_TYPES = ["daily_pet_pets", "daily_spend_starcoins", "daily_spend_diamonds"];
 const DAILY_GIFT_QUESTS = ["daily_open_gift_vip", "daily_open_gift_normal"];
 const HALLOWEEN_REWARDS = [
-    "halloween_25_beach_monster", "halloween_25_spider_minigame",
+    "halloween_25_beach_monster", "halloween_25_event_chatroom_monster", "halloween_25_spider_minigame",
     "halloween_25_plaza_monster", "halloween_25_spider_minigame_plaza",
     "halloween_25_vip_club_monster", "halloween_25_forest_monster",
     "halloween_25_spider_minigame_forest", "halloween_25_diamond_shop_monster", 
     "halloween_25_event_chatroom_monster", "halloween_25_spider_minigame_tokio",
-    
-    // Forest rewards
-    "forest_halloween_12", "forest_halloween_18_vip", "forest_halloween_17", 
-    "forest_halloween_20", "forest_halloween_29",
-    
-    // Beach rewards
-    "beach_halloween_11", "beach_halloween_11_vip", "beach_halloween_16", 
-    "beach_halloween_22", "beach_halloween_24", "beach_halloween_27",
-    
-    // Plaza rewards
-    "plaza_halloween_11", "plaza_halloween_15", "plaza_halloween_12_vip", 
-    "plaza_halloween_16_vip", "plaza_halloween_19_vip", "plaza_halloween_13", 
-    "plaza_halloween_19", "plaza_halloween_26", "plaza_halloween_30",
-    
-    // Event Chatroom rewards
-    "event_chatroom_halloween_23", "event_chatroom_halloween_25_vip", 
-    "event_chatroom_halloween_19", "event_chatroom_halloween_25", 
-    "event_chatroom_halloween_14", "event_chatroom_halloween_31"
+    "forest_halloween_12", "forest_halloween_18_vip", "forest_halloween_17", "forest_halloween_20", "forest_halloween_29",
+    "beach_halloween_11", "beach_halloween_11_vip", "beach_halloween_16", "beach_halloween_22", 
+    "beach_halloween_24", "beach_halloween_27",
+    "plaza_halloween_11", "plaza_halloween_15", "plaza_halloween_12_vip", "plaza_halloween_16_vip", 
+    "plaza_halloween_19_vip", "plaza_halloween_13", "plaza_halloween_19", "plaza_halloween_26", "plaza_halloween_30",
+    "event_chatroom_halloween_23", "event_chatroom_halloween_25_vip", "event_chatroom_halloween_19", 
+    "event_chatroom_halloween_25", "event_chatroom_halloween_14", "event_chatroom_halloween_31"
 ];
 const DAILY_PICKUP_REWARDS = ["daily_pickup", "daily_pickup_vip"];
 
@@ -81,9 +70,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function loadStoredData() {
     // Load profile data
-    const profileData = getProfileData();
-    if (profileData) {
+    const storedProfile = localStorage.getItem(STORAGE_KEYS.PROFILE_DATA);
+    if (storedProfile) {
+        profileData = JSON.parse(storedProfile);
+        updateProfileStatus();
     }
+
+    // Load target profiles
+    const storedTargets = localStorage.getItem(STORAGE_KEYS.TARGET_PROFILES);
+    if (storedTargets) {
+        targetProfiles = JSON.parse(storedTargets);
+        updateSavedProfilesList();
+    }
+
     // Load region
     currentRegion = localStorage.getItem(STORAGE_KEYS.REGION) || 'us';
     updateRegionButtons();
