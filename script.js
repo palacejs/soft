@@ -1,13 +1,11 @@
 // Storage keys
 const STORAGE_KEYS = {
-    ACCESS_TOKEN: 'msp2_access_token',
-    PROFILE_ID: 'msp2_profile_id',
+    PROFILE_DATA: 'msp2_profile_data',
     TARGET_PROFILES: 'msp2_target_profiles',
-    TOKEN_TIMESTAMP: 'msp2_token_timestamp',
     REGION: 'msp2_region'
 };
 
-// API Endpoints (US region by default)
+// API Endpoints
 const API_ENDPOINTS = {
     us: {
         federationgateway: 'https://us.mspapis.com/federationgateway/graphql',
@@ -23,9 +21,7 @@ const API_ENDPOINTS = {
     }
 };
 
-// Quest and reward IDs
-const DAILY_QUEST_TYPES = ["daily_pet_pets", "daily_spend_starcoins", "daily_spend_diamonds"];
-const DAILY_GIFT_QUESTS = ["daily_open_gift_vip", "daily_open_gift_normal"];
+// Game data
 const PET_IDS = [
     "c55e18991cf44659a99e6347de2fc96f", "cf0589ffe9ed45369d70dcaaa9aa1db2",
     "6ca07ffa53e3468598e6f2a2e0d20ded", "d92645e7672142028f2731aeda6e8e6f",
@@ -39,6 +35,8 @@ const PET_IDS = [
     "b0c79f7eb4d8400c85b273bc5e8bc75b", "bfbd5ba804e44566b68b0b5cb3bb01d0"
 ];
 
+const DAILY_QUEST_TYPES = ["daily_pet_pets", "daily_spend_starcoins", "daily_spend_diamonds"];
+const DAILY_GIFT_QUESTS = ["daily_open_gift_vip", "daily_open_gift_normal"];
 const HALLOWEEN_REWARDS = [
     "halloween_25_beach_monster", "halloween_25_event_chatroom_monster", "halloween_25_spider_minigame",
     "halloween_25_plaza_monster", "halloween_25_spider_minigame_plaza",
@@ -53,83 +51,74 @@ const HALLOWEEN_REWARDS = [
     "event_chatroom_halloween_23", "event_chatroom_halloween_25_vip", "event_chatroom_halloween_19", 
     "event_chatroom_halloween_25", "event_chatroom_halloween_14", "event_chatroom_halloween_31"
 ];
-
 const DAILY_PICKUP_REWARDS = ["daily_pickup", "daily_pickup_vip"];
 
 // Application state
+let currentRegion = localStorage.getItem(STORAGE_KEYS.REGION) || 'us';
+let profileData = null;
+let targetProfiles = [];
 let autoSendInterval = null;
-let currentTab = 'dailyTask';
-let isProcessingDailyTasks = false;
-let selectedRegion = localStorage.getItem(STORAGE_KEYS.REGION) || 'us';
+let isProcessing = false;
+let notificationCounter = 0;
 
-// Get current API endpoints based on selected region
-function getCurrentEndpoints() {
-    return API_ENDPOINTS[selectedRegion];
-}
-
-// Initialize the application
+// Initialize application
 document.addEventListener('DOMContentLoaded', function() {
     loadStoredData();
     setupEventListeners();
-    switchTab('dailyTask');
-    checkTokenExpiry();
-    updateRegionButtons();
+    updateUI();
 });
 
 function loadStoredData() {
-    // Load access token
-    const accessToken = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
-    const tokenTimestamp = localStorage.getItem(STORAGE_KEYS.TOKEN_TIMESTAMP);
-    
-    if (accessToken) {
-        document.getElementById('accessTokenInput').value = accessToken;
-        updateTokenStatus('Saved');
-        updateDailyTaskButton();
-    }
-
-    // Load profile ID
-    const profileId = localStorage.getItem(STORAGE_KEYS.PROFILE_ID);
-    if (profileId) {
-        document.getElementById('profileIdInput').value = profileId;
-        updateProfileStatus('Saved');
-        updateDailyTaskButton();
+    // Load profile data
+    const storedProfile = localStorage.getItem(STORAGE_KEYS.PROFILE_DATA);
+    if (storedProfile) {
+        profileData = JSON.parse(storedProfile);
+        updateProfileStatus();
     }
 
     // Load target profiles
-    const targetProfiles = JSON.parse(localStorage.getItem(STORAGE_KEYS.TARGET_PROFILES) || '[]');
-    updateSavedProfilesList(targetProfiles);
-    updateAutographButtons();
+    const storedTargets = localStorage.getItem(STORAGE_KEYS.TARGET_PROFILES);
+    if (storedTargets) {
+        targetProfiles = JSON.parse(storedTargets);
+        updateSavedProfilesList();
+    }
 
     // Load region
-    selectedRegion = localStorage.getItem(STORAGE_KEYS.REGION) || 'us';
+    currentRegion = localStorage.getItem(STORAGE_KEYS.REGION) || 'us';
+    updateRegionButtons();
 }
 
 function setupEventListeners() {
+    // Region selection
+    document.getElementById('selectUS').addEventListener('click', () => selectRegion('us'));
+    document.getElementById('selectEU').addEventListener('click', () => selectRegion('eu'));
+
     // Tab switching
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => switchTab(tab.dataset.tab));
     });
 
-    // Region selection
-    document.getElementById('selectUS').addEventListener('click', () => selectRegion('us'));
-    document.getElementById('selectEU').addEventListener('click', () => selectRegion('eu'));
-
-    // Daily Task tab events
-    document.getElementById('saveTokenBtn').addEventListener('click', saveAccessToken);
-    document.getElementById('clearTokenBtn').addEventListener('click', clearAccessToken);
-    document.getElementById('saveProfileBtn').addEventListener('click', saveProfileId);
-    document.getElementById('clearProfileBtn').addEventListener('click', clearProfileId);
+    // Daily task events
+    document.getElementById('saveProfileBtn').addEventListener('click', saveProfileData);
+    document.getElementById('clearProfileBtn').addEventListener('click', clearProfileData);
     document.getElementById('startDailyTaskBtn').addEventListener('click', startDailyTasks);
 
-    // Autograph tab events
-    document.getElementById('saveTargetBtn').addEventListener('click', saveTargetProfile);
+    // Autograph events
+    document.getElementById('addTargetBtn').addEventListener('click', addTargetProfile);
     document.getElementById('clearAllProfilesBtn').addEventListener('click', clearAllProfiles);
     document.getElementById('startAutographBtn').addEventListener('click', startAutograph);
     document.getElementById('autoSendBtn').addEventListener('click', toggleAutoSend);
+
+    // Enter key support
+    document.getElementById('targetProfileInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            addTargetProfile();
+        }
+    });
 }
 
 function selectRegion(region) {
-    selectedRegion = region;
+    currentRegion = region;
     localStorage.setItem(STORAGE_KEYS.REGION, region);
     updateRegionButtons();
     showNotification(`Region changed to ${region.toUpperCase()}`, 'success');
@@ -139,7 +128,7 @@ function updateRegionButtons() {
     const usBtn = document.getElementById('selectUS');
     const euBtn = document.getElementById('selectEU');
     
-    if (selectedRegion === 'us') {
+    if (currentRegion === 'us') {
         usBtn.classList.add('active');
         euBtn.classList.remove('active');
     } else {
@@ -149,8 +138,6 @@ function updateRegionButtons() {
 }
 
 function switchTab(tabName) {
-    currentTab = tabName;
-
     // Update tab buttons
     document.querySelectorAll('.tab').forEach(tab => {
         if (tab.dataset.tab === tabName) {
@@ -167,143 +154,178 @@ function switchTab(tabName) {
     document.getElementById(tabName + 'Tab').classList.add('active');
 }
 
-// Daily Task Functions
-function saveAccessToken() {
-    const token = document.getElementById('accessTokenInput').value.trim();
-    if (!token) {
-        showNotification('Please enter an access token', 'error');
-        return;
-    }
-
-    localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, token);
-    localStorage.setItem(STORAGE_KEYS.TOKEN_TIMESTAMP, Date.now().toString());
-    
-    updateTokenStatus('Saved');
-    updateDailyTaskButton();
-    showNotification('Access token saved successfully', 'success');
-
-    // Set timeout to clear token after 3.5 hours
-    setTimeout(() => {
-        clearAccessToken();
-        showNotification('Access token expired and cleared', 'info');
-    }, 3.5 * 60 * 60 * 1000);
-}
-
-function clearAccessToken() {
-    localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
-    localStorage.removeItem(STORAGE_KEYS.TOKEN_TIMESTAMP);
-    document.getElementById('accessTokenInput').value = '';
-    updateTokenStatus('');
-    updateDailyTaskButton();
-    showNotification('Access token cleared', 'info');
-}
-
-function saveProfileId() {
-    const profileId = document.getElementById('profileIdInput').value.trim();
-    if (!profileId) {
-        showNotification('Please enter a profile ID', 'error');
-        return;
-    }
-
-    localStorage.setItem(STORAGE_KEYS.PROFILE_ID, profileId);
-    updateProfileStatus('Saved');
-    updateDailyTaskButton();
-    showNotification('Profile ID saved successfully', 'success');
-}
-
-function clearProfileId() {
-    localStorage.removeItem(STORAGE_KEYS.PROFILE_ID);
-    document.getElementById('profileIdInput').value = '';
-    updateProfileStatus('');
-    updateDailyTaskButton();
-    showNotification('Profile ID cleared', 'info');
-}
-
-function updateTokenStatus(status) {
-    const statusElement = document.getElementById('tokenStatus');
-    if (status) {
-        statusElement.textContent = status;
-        statusElement.classList.remove('empty');
-    } else {
-        statusElement.textContent = 'No token saved';
-        statusElement.classList.add('empty');
-    }
-}
-
-function updateProfileStatus(status) {
-    const statusElement = document.getElementById('profileStatus');
-    if (status) {
-        statusElement.textContent = status;
-        statusElement.classList.remove('empty');
-    } else {
-        statusElement.textContent = 'No profile saved';
-        statusElement.classList.add('empty');
-    }
-}
-
-function updateDailyTaskButton() {
-    const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
-    const profileId = localStorage.getItem(STORAGE_KEYS.PROFILE_ID);
-    const startBtn = document.getElementById('startDailyTaskBtn');
-    
-    if (token && profileId && !isProcessingDailyTasks) {
-        startBtn.disabled = false;
-    } else {
-        startBtn.disabled = true;
-    }
-}
-
-function checkTokenExpiry() {
-    const tokenTimestamp = localStorage.getItem(STORAGE_KEYS.TOKEN_TIMESTAMP);
-    if (tokenTimestamp) {
-        const elapsed = Date.now() - parseInt(tokenTimestamp);
-        const remainingTime = (3.5 * 60 * 60 * 1000) - elapsed;
-        
-        if (remainingTime <= 0) {
-            clearAccessToken();
-        } else {
-            setTimeout(() => {
-                clearAccessToken();
-                showNotification('Access token expired and cleared', 'info');
-            }, remainingTime);
+function parseWebSocketData(input) {
+    try {
+        // Remove WebSocket message prefix if present
+        let cleanInput = input.trim();
+        if (cleanInput.startsWith('42[')) {
+            cleanInput = cleanInput.substring(2);
         }
+        
+        const parsed = JSON.parse(cleanInput);
+        if (Array.isArray(parsed) && parsed.length > 1) {
+            const data = parsed[1];
+            if (data.profileId && data.accessToken) {
+                return {
+                    profileId: data.profileId,
+                    accessToken: data.accessToken
+                };
+            }
+        }
+        return null;
+    } catch (error) {
+        return null;
     }
+}
+
+function saveProfileData() {
+    const rawInput = document.getElementById('rawInput').value.trim();
+    if (!rawInput) {
+        showNotification('Please enter the WebSocket message data', 'error');
+        return;
+    }
+
+    const parsed = parseWebSocketData(rawInput);
+    if (!parsed) {
+        showNotification('Invalid data format. Please check your input.', 'error');
+        return;
+    }
+
+    profileData = parsed;
+    localStorage.setItem(STORAGE_KEYS.PROFILE_DATA, JSON.stringify(profileData));
+    document.getElementById('rawInput').value = '';
+    updateProfileStatus();
+    updateUI();
+    showNotification('Profile data saved successfully!', 'success');
+}
+
+function clearProfileData() {
+    profileData = null;
+    document.getElementById('rawInput').value = '';
+    localStorage.removeItem(STORAGE_KEYS.PROFILE_DATA);
+    updateProfileStatus();
+    updateUI();
+    showNotification('Profile data cleared', 'info');
+}
+
+function updateProfileStatus() {
+    const statusElement = document.getElementById('profileStatus');
+    if (profileData) {
+        statusElement.textContent = `Profile ID: ${profileData.profileId.substring(0, 8)}...`;
+        statusElement.classList.remove('empty');
+    } else {
+        statusElement.textContent = 'No profile data saved';
+        statusElement.classList.add('empty');
+    }
+}
+
+function addTargetProfile() {
+    const input = document.getElementById('targetProfileInput');
+    const profileId = input.value.trim();
+    
+    if (!profileId) {
+        showNotification('Please enter a target profile ID', 'error');
+        return;
+    }
+
+    if (targetProfiles.includes(profileId)) {
+        showNotification('Profile already exists', 'info');
+        return;
+    }
+
+    targetProfiles.push(profileId);
+    localStorage.setItem(STORAGE_KEYS.TARGET_PROFILES, JSON.stringify(targetProfiles));
+    input.value = '';
+    updateSavedProfilesList();
+    updateUI();
+    showNotification('Target profile added successfully', 'success');
+}
+
+function removeTargetProfile(profileId) {
+    targetProfiles = targetProfiles.filter(id => id !== profileId);
+    localStorage.setItem(STORAGE_KEYS.TARGET_PROFILES, JSON.stringify(targetProfiles));
+    updateSavedProfilesList();
+    updateUI();
+    showNotification('Profile removed', 'info');
+}
+
+function clearAllProfiles() {
+    targetProfiles = [];
+    localStorage.removeItem(STORAGE_KEYS.TARGET_PROFILES);
+    updateSavedProfilesList();
+    updateUI();
+    showNotification('All profiles cleared', 'info');
+}
+
+function updateSavedProfilesList() {
+    const listContainer = document.getElementById('savedProfilesList');
+    
+    if (targetProfiles.length === 0) {
+        listContainer.innerHTML = '<div class="empty-state">No saved profiles</div>';
+        return;
+    }
+
+    listContainer.innerHTML = targetProfiles.map(profileId => `
+        <div class="profile-item">
+            <span>${profileId}</span>
+            <button class="remove-btn" onclick="removeTargetProfile('${profileId}')">×</button>
+        </div>
+    `).join('');
+}
+
+function updateUI() {
+    // Update daily task button
+    const dailyBtn = document.getElementById('startDailyTaskBtn');
+    dailyBtn.disabled = !profileData || isProcessing;
+
+    // Update autograph buttons
+    const startBtn = document.getElementById('startAutographBtn');
+    const autoBtn = document.getElementById('autoSendBtn');
+    const canUseAutograph = profileData && targetProfiles.length > 0;
+    
+    startBtn.disabled = !canUseAutograph;
+    autoBtn.disabled = !canUseAutograph;
 }
 
 async function startDailyTasks() {
-    if (isProcessingDailyTasks) return;
+    if (!profileData || isProcessing) return;
 
-    const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
-    const profileId = localStorage.getItem(STORAGE_KEYS.PROFILE_ID);
-
-    if (!token || !profileId) {
-        showNotification('Please save both access token and profile ID first', 'error');
-        return;
-    }
-
-    isProcessingDailyTasks = true;
-    updateDailyTaskButton();
+    isProcessing = true;
+    updateUI();
     
     const progressContainer = document.getElementById('progressContainer');
     const progressBar = document.getElementById('progressBar');
     const progressText = document.getElementById('progressText');
+    const progressStatus = document.getElementById('progressStatus');
     
     progressContainer.style.display = 'block';
     progressBar.style.width = '0%';
     progressText.textContent = '0%';
+    progressStatus.textContent = 'Starting daily tasks...';
 
     showNotification('Starting daily tasks...', 'info');
 
-    const bearerToken = `Bearer ${token}`;
-    const endpoints = getCurrentEndpoints();
+    const endpoints = API_ENDPOINTS[currentRegion];
     const headers = {
-        authorization: bearerToken,
+        authorization: `Bearer ${profileData.accessToken}`,
         "content-type": "application/json"
     };
 
+    // Calculate total tasks
+    const tasks = [
+        ...PET_IDS,
+        ...DAILY_QUEST_TYPES,
+        ...DAILY_GIFT_QUESTS.flatMap(quest => Array(5).fill(quest)),
+        ...HALLOWEEN_REWARDS.flatMap(reward => Array(5).fill(reward)),
+        ...DAILY_PICKUP_REWARDS.flatMap(reward => Array(5).fill(reward))
+    ];
+
     let completed = 0;
-    let total = PET_IDS.length + DAILY_QUEST_TYPES.length + DAILY_GIFT_QUESTS.length * 5 + 
-                HALLOWEEN_REWARDS.length * 5 + DAILY_PICKUP_REWARDS.length * 5;
+    const total = tasks.length;
+    
+    // Calculate delay to complete in ~30 seconds
+    const totalTime = 30000; // 30 seconds
+    const delayPerTask = totalTime / total;
 
     function updateProgress() {
         const percentage = Math.round((completed / total) * 100);
@@ -313,110 +335,106 @@ async function startDailyTasks() {
 
     try {
         // Pet interactions
-        showNotification('Processing pet interactions...', 'info');
+        progressStatus.textContent = 'Processing pet interactions...';
         for (const petId of PET_IDS) {
             try {
                 await fetch(`${endpoints.pets}/${petId}/interactions`, {
                     method: "POST",
                     headers,
-                    body: JSON.stringify({ profileId, gameId: "j68d" })
+                    body: JSON.stringify({ profileId: profileData.profileId, gameId: "j68d" })
                 });
-                completed++;
-                updateProgress();
-                await delay(1000); // 1 second delay
             } catch (error) {
-                completed++;
-                updateProgress();
+                // Continue on error
             }
+            completed++;
+            updateProgress();
+            await delay(delayPerTask);
         }
 
         // Complete daily quests
-        showNotification('Completing daily quests...', 'info');
+        progressStatus.textContent = 'Completing daily quests...';
         for (const questType of DAILY_QUEST_TYPES) {
             try {
-                await fetch(`${endpoints.quests}/${profileId}/games/j68d/quests/${questType}/state`, {
+                await fetch(`${endpoints.quests}/${profileData.profileId}/games/j68d/quests/${questType}/state`, {
                     method: "PUT",
                     headers,
                     body: JSON.stringify({ state: "Complete" })
                 });
-                completed++;
-                updateProgress();
-                await delay(1000);
             } catch (error) {
-                completed++;
-                updateProgress();
+                // Continue on error
             }
+            completed++;
+            updateProgress();
+            await delay(delayPerTask);
         }
 
         // Daily gift quests
-        showNotification('Processing gift quests...', 'info');
+        progressStatus.textContent = 'Processing gift quests...';
         for (const questId of DAILY_GIFT_QUESTS) {
             for (let i = 0; i < 5; i++) {
                 try {
-                    await fetch(`${endpoints.quests}/${profileId}/games/j68d/quests/${questId}/progress`, {
+                    await fetch(`${endpoints.quests}/${profileData.profileId}/games/j68d/quests/${questId}/progress`, {
                         method: "PUT",
                         headers,
                         body: JSON.stringify({ progress: 1 })
                     });
-                    completed++;
-                    updateProgress();
-                    await delay(1000);
                 } catch (error) {
-                    completed++;
-                    updateProgress();
+                    // Continue on error
                 }
+                completed++;
+                updateProgress();
+                await delay(delayPerTask);
             }
         }
 
         // Halloween rewards
-        showNotification('Claiming Halloween rewards...', 'info');
-        const payload = { state: "Claimed" };
+        progressStatus.textContent = 'Claiming Halloween rewards...';
         for (const rewardId of HALLOWEEN_REWARDS) {
             for (let i = 0; i < 5; i++) {
                 try {
-                    await fetch(`${endpoints.rewards}/${profileId}/games/j68d/rewards/${rewardId}`, {
+                    await fetch(`${endpoints.rewards}/${profileData.profileId}/games/j68d/rewards/${rewardId}`, {
                         method: "PUT",
                         headers,
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify({ state: "Claimed" })
                     });
-                    completed++;
-                    updateProgress();
-                    await delay(1000);
                 } catch (error) {
-                    completed++;
-                    updateProgress();
+                    // Continue on error
                 }
+                completed++;
+                updateProgress();
+                await delay(delayPerTask);
             }
         }
 
         // Daily pickup rewards
-        showNotification('Claiming daily pickup rewards...', 'info');
+        progressStatus.textContent = 'Claiming daily pickup rewards...';
         for (const rewardId of DAILY_PICKUP_REWARDS) {
             for (let i = 0; i < 5; i++) {
                 try {
-                    await fetch(`${endpoints.rewards}/${profileId}/games/j68d/rewards/${rewardId}`, {
+                    await fetch(`${endpoints.rewards}/${profileData.profileId}/games/j68d/rewards/${rewardId}`, {
                         method: "PUT",
                         headers,
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify({ state: "Claimed" })
                     });
-                    completed++;
-                    updateProgress();
-                    await delay(1000);
                 } catch (error) {
-                    completed++;
-                    updateProgress();
+                    // Continue on error
                 }
+                completed++;
+                updateProgress();
+                await delay(delayPerTask);
             }
         }
 
+        progressStatus.textContent = 'All daily tasks completed!';
         showNotification('All daily tasks completed successfully!', 'success');
-        
+
     } catch (error) {
+        progressStatus.textContent = 'Error during execution';
         showNotification('Error during daily tasks execution', 'error');
         console.error('Daily tasks error:', error);
     } finally {
-        isProcessingDailyTasks = false;
-        updateDailyTaskButton();
+        isProcessing = false;
+        updateUI();
         
         // Hide progress bar after 3 seconds
         setTimeout(() => {
@@ -425,100 +443,27 @@ async function startDailyTasks() {
     }
 }
 
-// Autograph Functions
-function saveTargetProfile() {
-    const profileId = document.getElementById('targetProfileInput').value.trim();
-    if (!profileId) {
-        showNotification('Please enter a target profile ID', 'error');
-        return;
-    }
-
-    const targetProfiles = JSON.parse(localStorage.getItem(STORAGE_KEYS.TARGET_PROFILES) || '[]');
-    
-    if (!targetProfiles.includes(profileId)) {
-        targetProfiles.push(profileId);
-        localStorage.setItem(STORAGE_KEYS.TARGET_PROFILES, JSON.stringify(targetProfiles));
-        updateSavedProfilesList(targetProfiles);
-        updateAutographButtons();
-        showNotification('Target profile saved successfully', 'success');
-    } else {
-        showNotification('Profile ID already exists', 'info');
-    }
-    
-    document.getElementById('targetProfileInput').value = '';
-}
-
-function clearAllProfiles() {
-    localStorage.removeItem(STORAGE_KEYS.TARGET_PROFILES);
-    updateSavedProfilesList([]);
-    updateAutographButtons();
-    showNotification('All target profiles cleared', 'info');
-}
-
-function removeProfile(profileId) {
-    const targetProfiles = JSON.parse(localStorage.getItem(STORAGE_KEYS.TARGET_PROFILES) || '[]');
-    const updatedProfiles = targetProfiles.filter(id => id !== profileId);
-    localStorage.setItem(STORAGE_KEYS.TARGET_PROFILES, JSON.stringify(updatedProfiles));
-    updateSavedProfilesList(updatedProfiles);
-    updateAutographButtons();
-    showNotification('Profile removed', 'info');
-}
-
-function updateSavedProfilesList(profiles) {
-    const listContainer = document.getElementById('savedProfilesList');
-    
-    if (profiles.length === 0) {
-        listContainer.innerHTML = '<div style="color: #999; font-size: 11px; padding: 8px; text-align: center;">No saved profiles</div>';
-        return;
-    }
-
-    listContainer.innerHTML = profiles.map(profileId => `
-        <div class="profile-item">
-            <span>${profileId}</span>
-            <button class="remove-btn" onclick="removeProfile('${profileId}')">×</button>
-        </div>
-    `).join('');
-}
-
-function updateAutographButtons() {
-    const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
-    const targetProfiles = JSON.parse(localStorage.getItem(STORAGE_KEYS.TARGET_PROFILES) || '[]');
-    
-    const startBtn = document.getElementById('startAutographBtn');
-    const autoBtn = document.getElementById('autoSendBtn');
-    
-    if (token && targetProfiles.length > 0) {
-        startBtn.disabled = false;
-        autoBtn.disabled = false;
-    } else {
-        startBtn.disabled = true;
-        autoBtn.disabled = true;
-    }
-}
-
 async function startAutograph() {
-    const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
-    const targetProfiles = JSON.parse(localStorage.getItem(STORAGE_KEYS.TARGET_PROFILES) || '[]');
-    const greetingType = document.getElementById('greetingTypeSelector').value;
-
-    if (!token || targetProfiles.length === 0) {
-        showNotification('Please save access token and target profiles first', 'error');
+    if (!profileData || targetProfiles.length === 0) {
+        showNotification('Please save profile data and add target profiles', 'error');
         return;
     }
 
+    const greetingType = document.getElementById('greetingTypeSelector').value;
     showNotification(`Sending ${greetingType} to ${targetProfiles.length} profiles...`, 'info');
     
-    const bearerToken = `Bearer ${token}`;
-    const endpoints = getCurrentEndpoints();
     let successCount = 0;
 
-    for (const targetProfileId of targetProfiles) {
-        const success = await sendGreeting(bearerToken, targetProfileId, greetingType, endpoints);
+    for (const targetId of targetProfiles) {
+        const success = await sendGreeting(targetId, greetingType);
         if (success) successCount++;
-        await delay(500); // 500ms delay between sends
+        
+        const statusMessage = `[${new Date().toLocaleTimeString()}] ${greetingType} to ${targetId}: ${success ? 'Success' : 'Failed'}`;
+        updateAutographStatus(statusMessage);
+        
+        await delay(500);
     }
 
-    updateAutographStatus(`Sent ${greetingType} to ${successCount}/${targetProfiles.length} profiles`);
     showNotification(`${greetingType} sending completed! (${successCount}/${targetProfiles.length})`, 'success');
 }
 
@@ -530,27 +475,26 @@ function toggleAutoSend() {
     }
 }
 
-async function startAutoSend() {
-    const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
-    const targetProfiles = JSON.parse(localStorage.getItem(STORAGE_KEYS.TARGET_PROFILES) || '[]');
-
-    if (!token || targetProfiles.length === 0) {
-        showNotification('Please save access token and target profiles first', 'error');
+function startAutoSend() {
+    if (!profileData || targetProfiles.length === 0) {
+        showNotification('Please save profile data and add target profiles', 'error');
         return;
     }
 
     const autoBtn = document.getElementById('autoSendBtn');
-    autoBtn.textContent = 'Stop Auto';
     autoBtn.classList.add('active');
+    autoBtn.innerHTML = '<span class="icon">⏹️</span>Stop Auto';
 
     updateAutographStatus('Auto Send started - sending every 2 minutes');
     showNotification('Auto Send started', 'success');
 
     // Send immediately first
-    await performAutoSend();
+    startAutograph();
 
     // Then set interval for every 2 minutes
-    autoSendInterval = setInterval(performAutoSend, 2 * 60 * 1000);
+    autoSendInterval = setInterval(() => {
+        startAutograph();
+    }, 2 * 60 * 1000);
 }
 
 function stopAutoSend() {
@@ -560,37 +504,17 @@ function stopAutoSend() {
     }
 
     const autoBtn = document.getElementById('autoSendBtn');
-    autoBtn.textContent = 'Auto Send';
     autoBtn.classList.remove('active');
+    autoBtn.innerHTML = '<span class="icon">🔄</span>Auto Send';
 
     updateAutographStatus('Auto Send stopped');
     showNotification('Auto Send stopped', 'info');
 }
 
-async function performAutoSend() {
-    const token = localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
-    const targetProfiles = JSON.parse(localStorage.getItem(STORAGE_KEYS.TARGET_PROFILES) || '[]');
-    const greetingType = document.getElementById('greetingTypeSelector').value;
+async function sendGreeting(targetProfileId, greetingType) {
+    if (!profileData) return false;
 
-    if (!token || targetProfiles.length === 0) {
-        stopAutoSend();
-        return;
-    }
-
-    const bearerToken = `Bearer ${token}`;
-    const endpoints = getCurrentEndpoints();
-    let successCount = 0;
-
-    for (const targetProfileId of targetProfiles) {
-        const success = await sendGreeting(bearerToken, targetProfileId, greetingType, endpoints);
-        if (success) successCount++;
-        await delay(500);
-    }
-
-    updateAutographStatus(`Auto Send: ${greetingType} sent to ${successCount}/${targetProfiles.length} profiles - Next in 2 minutes`);
-}
-
-async function sendGreeting(bearerToken, targetProfileId, greetingType, endpoints) {
+    const endpoints = API_ENDPOINTS[currentRegion];
     const payload = {
         id: "SendGreetings-159BDD7706D824BB8F14874A7FAE3368",
         variables: {
@@ -605,26 +529,30 @@ async function sendGreeting(bearerToken, targetProfileId, greetingType, endpoint
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "Authorization": bearerToken
+                "Authorization": `Bearer ${profileData.accessToken}`
             },
             body: JSON.stringify(payload)
         });
-
         return response.ok;
     } catch (error) {
-        console.error('Error sending greeting:', error);
         return false;
     }
 }
 
 function updateAutographStatus(message) {
     const statusDiv = document.getElementById('autographStatus');
-    const timestamp = new Date().toLocaleTimeString();
-    statusDiv.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+    const messageDiv = document.createElement('div');
+    messageDiv.textContent = message;
+    statusDiv.appendChild(messageDiv);
+    
+    // Keep only last 10 messages
+    while (statusDiv.children.length > 10) {
+        statusDiv.removeChild(statusDiv.firstChild);
+    }
+    
     statusDiv.scrollTop = statusDiv.scrollHeight;
 }
 
-// Utility Functions
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -650,9 +578,9 @@ function showNotification(message, type = 'info') {
             if (notification.parentNode) {
                 notification.parentNode.removeChild(notification);
             }
-        }, 300);
+        }, 400);
     }, 3000);
 }
 
-// Make removeProfile globally accessible
-window.removeProfile = removeProfile;
+// Make functions globally accessible
+window.removeTargetProfile = removeTargetProfile;
