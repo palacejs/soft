@@ -1,370 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MSP2 OBFX</title>
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background: radial-gradient(circle at center, #000a1b 1%, #000000 70%);
-      font-family: Arial, sans-serif;
-      min-height: 100vh;
-    }
-
-    body {
-      position: relative;
-      min-height: 100vh;
-      box-sizing: border-box;
-      overflow: hidden;
-    }
-
-    canvas {
-      display: block;
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-    }
-
-    .top-bar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 56px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 2;
-      background: rgba(0, 0, 30, 0.6);
-      padding: 0 18px;
-      box-sizing: border-box;
-      border-bottom: 1px solid rgba(150,150,255,0.18);
-      backdrop-filter: blur(7px);
-    }
-
-    .discord-btn {
-      background: linear-gradient(135deg, #5865F2, #7289DA);
-      border: 1px solid rgba(150,150,255,0.20);
-      border-radius: 8px;
-      color: white;
-      font-weight: 600;
-      font-size: 16px;
-      padding: 8px 16px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .discord-btn:hover {
-      background: linear-gradient(135deg, #4752C4, #5B6DB8);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
-    }
-
-    .overlay {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 0, 30, 0.6);
-      border: 1px solid rgba(150, 150, 255, 0.4);
-      border-radius: 12px;
-      padding: 20px 30px;
-      box-shadow: 0 0 20px rgba(180, 200, 255, 0.3);
-      color: #9abfff;
-      text-align: center;
-      backdrop-filter: blur(6px);
-      opacity: 0;
-      animation: appear 1.4s ease-out forwards;
-      width: 90%;
-      max-width: 400px;
-      z-index: 1;
-    }
-
-    .overlay h1 {
-      margin: 0;
-      font-size: 24px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      background: linear-gradient(to right, #9abfff, #6effb2);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .subtext {
-      margin-top: 12px;
-      font-size: 14px;
-      color: #c0d7ff;
-    }
-
-    .bookmark-btn {
-      display: block;
-      width: 87.5%;
-      margin-top: 15px;
-      padding: 10px 25px;
-      font-size: 15px;
-      background: linear-gradient(to right, #6e9aff, #4db89e);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      text-decoration: none;
-      font-weight: 600;
-      transition: background 0.5s ease, transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .bookmark-btn:hover {
-      background: linear-gradient(to right, #4db89e, #6e9aff);
-      transform: scale(1.05);
-      box-shadow: 0 0 15px rgba(0, 139, 255, 0.6);
-    }
-
-    /* MSP2 Troll button styles */
-    .bookmark-btn.disabled {
-      background: linear-gradient(to right, #666, #777);
-      cursor: not-allowed;
-      position: relative;
-    }
-
-    .bookmark-btn.disabled:hover {
-      background: linear-gradient(to right, #666, #777);
-      transform: none;
-      box-shadow: none;
-      cursor: not-allowed;
-    }
-
-    /* Notification system */
-    .notification {
-      position: fixed;
-      top: -100px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 40, 0.95);
-      border: 1px solid rgba(150, 150, 255, 0.4);
-      border-radius: 12px;
-      padding: 15px 20px;
-      color: #9abfff;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      z-index: 9999;
-      min-width: 300px;
-      max-width: 90vw;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-      transition: all 0.5s ease;
-    }
-
-    .notification.show {
-      top: 20px;
-    }
-
-    .notification-icon {
-      font-size: 20px;
-      color: #6effb2;
-      font-weight: bold;
-    }
-
-    .notification-text {
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    @keyframes appear {
-      0% {
-        transform: translate(-50%, -50%) scale(0.6);
-        opacity: 0;
-      }
-      100% {
-        transform: translate(-50%, -50%) scale(1);
-        opacity: 1;
-      }
-    }
-
-    /* Info text */
-    .info {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      padding: 8px 15px;
-      background: rgba(0, 0, 30, 0.8);
-      color: #9abfff;
-      text-align: center;
-      font-size: 13px;
-      border-top: 1px solid rgba(150, 150, 255, 0.3);
-      backdrop-filter: blur(4px);
-      z-index: 3;
-    }
-
-    @media (max-width: 600px) {
-      .overlay {
-        padding: 16px 7px;
-        font-size: 13px;
-        max-width: 99vw;
-      }
-      .top-bar {
-        height: 44px;
-        font-size: 14px;
-        padding: 0 6px;
-      }
-      .discord-btn {
-        font-size: 13px;
-        padding: 6px 12px;
-      }
-      .info {
-        padding: 6px 4px;
-        font-size: 11px;
-      }
-      .notification {
-        min-width: 250px;
-        font-size: 13px;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSP2 Tool - OBFX</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <canvas id="starfield"></canvas>
-  <div class="top-bar">
-    <a href="https://discord.com/invite/dJgrNxDBYK" target="_blank" class="discord-btn">
-      <span>🎮</span>
-      <span>Join Discord</span>
-    </a>
-  </div>
-  <div class="overlay" id="mainOverlay">
-    <h1>MSP2 Tool</h1>
-    <p class="subtext">
-      Now you can do everything comfortably with the improved tool.
-      If nothing happens, install
-      <a href="https://violentmonkey.github.io/get-it/" target="_blank" style="color:#6effb2;">Violentmonkey</a> first.
-    </p>
-    <a href="https://obfx.pages.dev/OBFX.user.js" class="bookmark-btn" id="btnMood">
-      Install MSP2 OBFX
-    </a>
-    <a href="#" class="bookmark-btn disabled" id="btnTroll">
-      Install MSP2 Troll
-    </a>
-  </div>
+    <div id="msp2Panel" class="panel">
+        <div class="panel-header">
+            <h2 id="mainTitle">OBFX</h2>
+        </div>
 
-  <div class="info" id="infoText">
-    Info: Remember that OBFX works with signals; sometimes a weak connection means it works slowly.
-  </div>
+        <div id="tabContainer" class="tab-container">
+            <div class="tab active" data-tab="dailyTask">Daily Task</div>
+            <div class="tab" data-tab="autograph">Autograph</div>
+        </div>
 
-  <!-- Notification element -->
-  <div class="notification" id="trollNotification">
-    <div class="notification-icon">ℹ️</div>
-    <div class="notification-text">MSP2 Troll license has expired.</div>
-  </div>
+        <div id="tabContent" class="tab-content">
+            <!-- Daily Task Tab -->
+            <div id="dailyTaskTab" class="tab-panel active">
+                <div class="input-group">
+                    <label>Region:</label>
+                    <div class="region-selector">
+                        <button id="selectUS" class="region-btn active">US</button>
+                        <button id="selectEU" class="region-btn">EU</button>
+                    </div>
+                </div>
 
-  <script>
-    // Responsive canvas starfield
-    let canvas = document.getElementById('starfield');
-    let ctx = canvas.getContext('2d');
+                <div class="input-group">
+                    <label>Access Token:</label>
+                    <div class="input-row">
+                        <input type="text" id="accessTokenInput" placeholder="Enter Access Token">
+                        <button id="saveTokenBtn" class="btn btn-primary">Save</button>
+                    </div>
+                    <div class="input-row">
+                        <span id="tokenStatus" class="status-text"></span>
+                        <button id="clearTokenBtn" class="btn btn-secondary">Clear</button>
+                    </div>
+                </div>
 
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+                <div class="input-group">
+                    <label>Profile ID:</label>
+                    <div class="input-row">
+                        <input type="text" id="profileIdInput" placeholder="Enter Profile ID">
+                        <button id="saveProfileBtn" class="btn btn-primary">Save</button>
+                    </div>
+                    <div class="input-row">
+                        <span id="profileStatus" class="status-text"></span>
+                        <button id="clearProfileBtn" class="btn btn-secondary">Clear</button>
+                    </div>
+                </div>
 
-    const stars = [];
-    const connections = {};
-    const STAR_COUNT = 80;
-    const MAX_DISTANCE = 120;
+                <div class="start-button-container">
+                    <button id="startDailyTaskBtn" class="btn btn-start" disabled>Start Daily Tasks</button>
+                </div>
 
-    class Star {
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.vx = (Math.random() - 0.5) * 0.2;
-        this.vy = (Math.random() - 0.5) * 0.2;
-        this.radius = Math.random() * 1 + 1;
-        this.alpha = Math.random() * 0.5 + 0.5;
-        this.alphaChange = 0.003 + Math.random() * 0.00002;
-      }
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        if (this.x <= 0 || this.x >= canvas.width) this.vx *= -1;
-        if (this.y <= 0 || this.y >= canvas.height) this.vy *= -1;
-        this.alpha += this.alphaChange;
-        if (this.alpha >= 0.5 || this.alpha <= 0.1) this.alphaChange *= -1;
-      }
-      draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0, 0, 139, ${this.alpha})`;
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = `rgba(0, 0, 139, ${this.alpha})`;
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      }
-    }
+                <div id="progressContainer" class="progress-container" style="display: none;">
+                    <div class="progress-bar">
+                        <div id="progressBar" class="progress-fill"></div>
+                    </div>
+                    <span id="progressText">0%</span>
+                </div>
+            </div>
 
-    for (let i = 0; i < STAR_COUNT; i++) {
-      stars.push(new Star());
-    }
+            <!-- Autograph Tab -->
+            <div id="autographTab" class="tab-panel">
+                <div class="input-group">
+                    <label>Target Profile ID:</label>
+                    <div class="input-row">
+                        <input type="text" id="targetProfileInput" placeholder="Enter Target Profile ID">
+                        <button id="saveTargetBtn" class="btn btn-primary">Save</button>
+                    </div>
+                    <div class="saved-profiles">
+                        <div class="saved-profiles-header">
+                            <span>Saved Profiles:</span>
+                            <button id="clearAllProfilesBtn" class="btn btn-secondary btn-small">Clear All</button>
+                        </div>
+                        <div id="savedProfilesList" class="profiles-list"></div>
+                    </div>
+                </div>
 
-    function drawLines() {
-      for (let i = 0; i < stars.length; i++) {
-        for (let j = i + 1; j < stars.length; j++) {
-          const dx = stars[i].x - stars[j].x;
-          const dy = stars[i].y - stars[j].y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          const key = `${i}-${j}`;
-          if (!connections[key]) connections[key] = { alpha: 0 };
-          const conn = connections[key];
-          const targetAlpha = dist < MAX_DISTANCE ? 0.4 - (dist / MAX_DISTANCE * 0.4) : 0;
-          conn.alpha += conn.alpha < targetAlpha ? 0.01 : -0.01;
-          conn.alpha = Math.max(0, Math.min(conn.alpha, targetAlpha));
-          if (conn.alpha > 0) {
-            ctx.beginPath();
-            ctx.moveTo(stars[i].x, stars[i].y);
-            ctx.lineTo(stars[j].x, stars[j].y);
-            ctx.strokeStyle = `rgba(0, 0, 139, ${conn.alpha})`;
-            ctx.lineWidth = 0.6;
-            ctx.stroke();
-          }
-        }
-      }
-    }
+                <div class="input-group">
+                    <label>Greeting Type:</label>
+                    <select id="greetingTypeSelector" class="select-input">
+                        <option value="Autograph">Autograph</option>
+                        <option value="StarGreeting">StarGreeting</option>
+                        <option value="HalloweenGreeting">HalloweenGreeting</option>
+                        <option value="LoveGreeting">LoveGreeting</option>
+                        <option value="RainbowGreeting">RainbowGreeting</option>
+                        <option value="PartyGreeting">PartyGreeting</option>
+                        <option value="SuperStarGreeting">SuperStarGreeting</option>
+                    </select>
+                </div>
 
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      stars.forEach(star => {
-        star.update();
-        star.draw();
-      });
-      drawLines();
-      requestAnimationFrame(animate);
-    }
-    animate();
+                <div class="button-group">
+                    <button id="startAutographBtn" class="btn btn-start" disabled>Start</button>
+                    <button id="autoSendBtn" class="btn btn-auto" disabled>Auto Send</button>
+                </div>
 
-    // MSP2 Troll notification function
-    function showTrollNotification() {
-      const notification = document.getElementById('trollNotification');
-      
-      // Show notification
-      notification.classList.add('show');
-      
-      // Hide after 5 seconds
-      setTimeout(() => {
-        notification.classList.remove('show');
-      }, 5000);
-    }
+                <div id="autographStatus" class="status-display"></div>
+            </div>
+        </div>
 
-    // Special event listener for MSP2 Troll button
-    document.getElementById('btnTroll').addEventListener('click', function(e) {
-      e.preventDefault();
-      showTrollNotification();
-    });
-  </script>
+        <div class="panel-footer">
+            <span>V 1.6.0</span>
+        </div>
+    </div>
+
+    <div id="notificationContainer" class="notification-container"></div>
+
+    <script src="script.js"></script>
 </body>
 </html>
