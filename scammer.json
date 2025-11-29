@@ -1,0 +1,37 @@
+[
+  {
+    "id": "47ae5a51825f474ea7ddc43e428ed833",
+    "açıklama": "AlironN adlı kullanıcı, diğer oyuncuları manipüle ederek eşyalarını, kıyafetlerini ve evcil hayvanlarını çalmakla tanınıyor. Toplulukta dolandırıcı olarak biliniyor ve uygunsuz davranışlarda bulunduğu bildirilmiş.",
+    "güvenlik": "kırmızı"
+  },
+  {
+    "id": "4474a1671fae48a8ad6eff24f974d1f3",
+    "açıklama": "T Y K adlı kullanıcı, kısmen takas bahanesiyle evcil hayvan çalma girişiminde bulunabileceği bildirilen bir hesaptır. Dikkatli olunması önerilir.",
+    "güvenlik": "sarı"
+  },
+  {
+    "id": "46612ab70c4a45b68747120a850ba4b0",
+    "açıklama": "-black stones adlı kullanıcı, diğer oyuncuları yanıltarak eşyalarını veya evcil hayvanlarını alma girişimlerinde bulunduğu bildirilen bir hesaptır.",
+    "güvenlik": "kırmızı"
+  },
+  {
+    "id": "173c03c4ba5c4db5bcdcc36619d7adec",
+    "açıklama": "Alchena adlı kullanıcı, oyuncuları kandırarak eşyalarını veya evcil hayvanlarını alma gibi benzer hileli işlemlerde bulunduğu bildirilen bir hesaptır.",
+    "güvenlik": "kırmızı"
+  },
+  {
+    "id": "f969b9fdb4654d778b3acc5683606f52",
+    "açıklama": "Peaknox adlı kullanıcı hakkında şu ana kadar eşya veya evcil hayvan çalma girişimi bildirilmemiştir.",
+    "güvenlik": "yeşil"
+  },
+  {
+    "id": "db731d426fea47e191669046776bb21c",
+    "açıklama": "pelas3xannyy adlı kullanıcı hakkında şu ana kadar eşya veya evcil hayvan çalma girişimi bildirilmemiştir.",
+    "güvenlik": "yeşil"
+  },
+  {
+    "id": "805ca5d6b9504b5c9b5ca40323fd7138",
+    "açıklama": "blood- adlı kullanıcı, şu ana kadar eşya veya evcil hayvan çalma girişiminde bulunmadığı gözlemlenmiş bir hesaptır.",
+    "güvenlik": "yeşil"
+  }
+]
