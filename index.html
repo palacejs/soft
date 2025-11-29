@@ -152,6 +152,10 @@
                         <span data-translate="comments">Comments</span>
                         <span id="commentsCount" class="comments-count">(0)</span>
                     </button>
+                    <button id="scammerTestBtn" class="btn btn-secondary">
+                        <span class="icon">🔍</span>
+                        <span data-translate="scammerTest">Scammer Test</span>
+                    </button>
                     <button id="giftsBtn" class="btn btn-secondary">
                         <span class="icon">🎁</span>
                         <span data-translate="gifts">Gifts</span> (<span id="giftsCount">0</span>)
@@ -199,6 +203,65 @@
             <div class="comments-content">
                 <div id="commentsList" class="comments-list">
                     <div class="no-comments" data-translate="noComments">No comments yet</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scammer Test Screen -->
+        <div id="scammerTestScreen" class="scammer-test-screen" style="display: none;">
+            <div class="scammer-test-header">
+                <h2 data-translate="scammerTest">Scammer Test</h2>
+                <button id="closeScammerTestBtn" class="close-btn">×</button>
+            </div>
+            
+            <div class="scammer-test-content">
+                <div class="scammer-test-input">
+                    <input 
+                        type="text" 
+                        id="scammerUsernameInput" 
+                        data-translate-placeholder="enterUsername"
+                        placeholder="Enter username to check..."
+                        class="scammer-username-input"
+                    >
+                    <button id="checkScammerBtn" class="btn btn-primary">
+                        <span class="icon">🔍</span>
+                        <span data-translate="checkUser">Check User</span>
+                    </button>
+                </div>
+
+                <div id="scammerResults" class="scammer-results" style="display: none;">
+                    <div class="scammer-user-info">
+                        <div class="scammer-avatar-container">
+                            <img id="scammerUserAvatar" class="scammer-user-avatar" src="" alt="Avatar">
+                        </div>
+                        <div class="scammer-username" id="scammerUsername">Loading...</div>
+                    </div>
+
+                    <div class="security-meter-container">
+                        <div class="security-meter">
+                            <svg class="security-meter-svg" viewBox="0 0 300 60" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Background line -->
+                                <rect class="meter-background" x="30" y="20" width="240" height="20" rx="10" fill="rgba(255,255,255,0.2)"/>
+                                <!-- Green zone (left) -->
+                                <rect class="meter-green" x="30" y="20" width="80" height="20" rx="10" fill="#4CAF50"/>
+                                <!-- Yellow zone (middle) -->
+                                <rect class="meter-yellow" x="110" y="20" width="80" height="20" fill="#FFD700"/>
+                                <!-- Red zone (right) -->
+                                <rect class="meter-red" x="190" y="20" width="80" height="20" rx="10" fill="#f44336"/>
+                                <!-- White indicator bar -->
+                                <rect id="securityNeedle" x="148" y="15" width="4" height="30" rx="2" fill="#ffffff"/>
+                            </svg>
+                            <div class="security-label">
+                                <span data-translate="security">Security</span>
+                                <span id="securityStatus" class="security-status">?</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="scammer-description">
+                        <h4 data-translate="description">Description:</h4>
+                        <div id="scammerDescription" class="description-text">Checking user information...</div>
+                    </div>
                 </div>
             </div>
         </div>
