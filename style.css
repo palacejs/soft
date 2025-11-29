@@ -791,7 +791,7 @@ body.pixel-theme .login-header h2 {
     height: 80px;
     border-radius: 50%;
     border: 3px solid #4CAF50;
-    object-fit: cover;
+    
     box-shadow: 0 0 30px rgba(76, 175, 80, 0.4);
 }
 
