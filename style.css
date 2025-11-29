@@ -26,7 +26,8 @@ body.stars-theme .loading-screen,
 body.stars-theme .success-screen,
 body.stars-theme .receipt-screen,
 body.stars-theme .gifts-screen,
-body.stars-theme .comments-screen {
+body.stars-theme .comments-screen,
+body.stars-theme .scammer-test-screen {
     background: rgba(10, 20, 40, 0.95);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(100, 150, 255, 0.2);
@@ -41,7 +42,8 @@ body.stars-theme .loading-screen::before,
 body.stars-theme .success-screen::before,
 body.stars-theme .receipt-screen::before,
 body.stars-theme .gifts-screen::before,
-body.stars-theme .comments-screen::before {
+body.stars-theme .comments-screen::before,
+body.stars-theme .scammer-test-screen::before {
     background: linear-gradient(90deg, transparent, rgba(100, 150, 255, 0.6), transparent);
 }
 
@@ -279,7 +281,8 @@ body.pixel-theme .loading-screen,
 body.pixel-theme .success-screen,
 body.pixel-theme .receipt-screen,
 body.pixel-theme .gifts-screen,
-body.pixel-theme .comments-screen {
+body.pixel-theme .comments-screen,
+body.pixel-theme .scammer-test-screen {
     background: linear-gradient(135deg, rgba(26, 0, 51, 0.95), rgba(51, 0, 102, 0.95));
     backdrop-filter: blur(10px);
     border: 3px solid #00ff80;
@@ -296,7 +299,8 @@ body.pixel-theme .loading-screen::before,
 body.pixel-theme .success-screen::before,
 body.pixel-theme .receipt-screen::before,
 body.pixel-theme .gifts-screen::before,
-body.pixel-theme .comments-screen::before {
+body.pixel-theme .comments-screen::before,
+body.pixel-theme .scammer-test-screen::before {
     background: linear-gradient(90deg, transparent, #00ff80, transparent);
     height: 3px;
 }
@@ -524,7 +528,7 @@ body.pixel-theme .login-header h2 {
 }
 
 .login-screen, .loading-screen, .success-screen, .main-menu, .receipt-screen,
-.gifts-screen, .comments-screen {
+.gifts-screen, .comments-screen, .scammer-test-screen {
     background: rgba(26, 26, 46, 0.95);
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -541,7 +545,7 @@ body.pixel-theme .login-header h2 {
 }
 
 .login-screen::before, .loading-screen::before, .success-screen::before, .main-menu::before,
-.receipt-screen::before, .gifts-screen::before, .comments-screen::before {
+.receipt-screen::before, .gifts-screen::before, .comments-screen::before, .scammer-test-screen::before {
     content: '';
     position: absolute;
     top: 0;
@@ -1133,6 +1137,242 @@ body.pixel-theme .login-header h2 {
     font-size: 14px;
     color: rgba(255, 255, 255, 0.7);
     margin-left: 5px;
+}
+
+/* Scammer Test Screen - FIXED WITH PROPER SPACING AND SCROLLBAR */
+.scammer-test-screen {
+    background: rgba(26, 26, 46, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 30px;
+    width: 90%;
+    max-width: 650px; /* Increased width */
+    
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+    animation: slideIn 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+}
+
+.scammer-test-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+}
+
+.scammer-test-header h2 {
+    font-size: 24px;
+    color: #FF9800;
+    font-weight: 700;
+    text-shadow: 0 0 20px rgba(255, 152, 0, 0.3);
+    margin: 0;
+}
+
+.scammer-test-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    overflow-y: auto;
+    padding-right: 8px; /* Space for scrollbar */
+}
+
+/* Custom scrollbar for scammer test content */
+.scammer-test-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scammer-test-content::-webkit-scrollbar-track {
+    background: rgba(26, 26, 46, 0.3);
+    border-radius: 4px;
+}
+
+.scammer-test-content::-webkit-scrollbar-thumb {
+    background: rgba(255, 152, 0, 0.3);
+    border-radius: 4px;
+    transition: background 0.3s ease;
+}
+
+.scammer-test-content::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 152, 0, 0.5);
+}
+
+/* Firefox scrollbar */
+.scammer-test-content {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 152, 0, 0.3) rgba(26, 26, 46, 0.3);
+}
+
+.scammer-test-input {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex-shrink: 0;
+}
+
+.scammer-username-input {
+    width: 100%;
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: white;
+    font-size: 16px;
+    font-family: inherit;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scammer-username-input:focus {
+    outline: none;
+    border-color: #FF9800;
+    box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+.scammer-username-input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.scammer-results {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    animation: slideIn 0.3s ease-out;
+    flex-shrink: 0;
+}
+
+.scammer-user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.scammer-avatar-container {
+    position: relative;
+}
+
+.scammer-user-avatar {
+    width: 80px; /* Increased size */
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #FF9800;
+    object-fit: cover;
+    box-shadow: 0 0 25px rgba(255, 152, 0, 0.4);
+}
+
+.scammer-username {
+    font-size: 20px; /* Increased size */
+    font-weight: 700;
+    color: #FF9800;
+    text-shadow: 0 0 15px rgba(255, 152, 0, 0.3);
+}
+
+/* Security Meter Container - Proper spacing */
+.security-meter-container {
+    display: flex;
+    justify-content: center;
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 25px 0; /* Added proper margin */
+}
+
+.security-meter {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.security-meter-svg {
+    width: 320px; /* Increased width */
+    height: 70px;  /* Increased height */
+    overflow: visible;
+}
+
+/* Updated Linear Meter Styles */
+.meter-background {
+    fill: rgba(255, 255, 255, 0.2);
+    stroke: none;
+}
+
+.meter-green {
+    fill: #4CAF50;
+    filter: drop-shadow(0 0 6px rgba(76, 175, 80, 0.5));
+}
+
+.meter-yellow {
+    fill: #FFD700;
+    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.5));
+}
+
+.meter-red {
+    fill: #f44336;
+    filter: drop-shadow(0 0 6px rgba(244, 67, 54, 0.5));
+}
+
+/* White indicator bar styling */
+#securityNeedle {
+    fill: #ffffff;
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.8));
+    transition: x 0.5s ease-in-out;
+}
+
+.security-label {
+    text-align: center;
+    font-size: 16px; /* Increased size */
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.security-status {
+    font-size: 28px; /* Increased size */
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+    filter: drop-shadow(0 0 8px currentColor);
+}
+
+/* Scammer Description - Proper spacing */
+.scammer-description {
+    padding: 25px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 25px; /* Added proper margin */
+}
+
+.scammer-description h4 {
+    font-size: 18px; /* Increased size */
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.description-text {
+    font-size: 15px; /* Increased size */
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6; /* Better line height */
+    padding: 15px 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Delete Comment Dialog */
@@ -2054,13 +2294,13 @@ body.pixel-theme .login-header h2 {
     left: 0;
     right: 0;
     bottom: 0;
-    
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 5000;
     animation: fadeIn 0.2s ease-in-out;
-    
 }
 
 .region-dialog, .warning-dialog, .gift-result-dialog, .theme-dialog, .language-dialog, .zoom-dialog {
@@ -2328,13 +2568,20 @@ canvas {
     }
 
     .login-screen, .loading-screen, .success-screen, .main-menu, .receipt-screen, 
-    .gifts-screen, .autograph-modal, .comments-screen, .change-mood-screen, .change-password-screen {
+    .gifts-screen, .autograph-modal, .comments-screen, .change-mood-screen, .change-password-screen,
+    .scammer-test-screen {
         padding: 25px;
         border-radius: 20px;
         max-width: 100%;
     }
 
-    .autograph-modal, .comments-modal {
+    .scammer-test-screen {
+        padding: 20px;
+        max-width: 95%;
+        max-height: 90vh;
+    }
+
+    .autograph-modal, .comments-modal, .scammer-test-screen {
         max-height: 90vh;
         max-width: 95%;
     }
@@ -2452,7 +2699,7 @@ canvas {
         gap: 12px;
     }
 
-    .password-modal, .autograph-modal, .comments-modal {
+    .password-modal, .autograph-modal, .comments-modal, .scammer-test-screen {
         max-width: 400px;
         padding: 25px;
     }
@@ -2484,6 +2731,32 @@ canvas {
         justify-content: flex-start;
         gap: 15px;
     }
+
+    .security-meter-svg {
+        width: 260px; /* Smaller on mobile */
+        height: 65px;
+    }
+
+    .scammer-test-content {
+        max-height: 75vh;
+    }
+
+    .scammer-test-header h2 {
+        font-size: 20px;
+    }
+
+    .scammer-user-avatar {
+        width: 70px;
+        height: 70px;
+    }
+
+    .scammer-username {
+        font-size: 18px;
+    }
+
+    .security-status {
+        font-size: 24px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -2501,11 +2774,11 @@ canvas {
         gap: 6px;
     }
 
-    .login-screen, .main-menu, .gifts-screen, .autograph-modal, .comments-screen {
+    .login-screen, .main-menu, .gifts-screen, .autograph-modal, .comments-screen, .scammer-test-screen {
         padding: 20px;
     }
 
-    .mood-modal, .password-modal, .autograph-modal, .comments-modal {
+    .mood-modal, .password-modal, .autograph-modal, .comments-modal, .scammer-test-screen {
         padding: 20px;
     }
 
@@ -2523,7 +2796,34 @@ canvas {
         height: 40px;
     }
 
-    .comments-modal {
+    .comments-modal, .scammer-test-screen {
         max-width: 95%;
+    }
+
+    .security-meter-svg {
+        width: 240px;
+        height: 60px;
+    }
+
+    .scammer-user-avatar {
+        width: 60px;
+        height: 60px;
+    }
+
+    .scammer-test-screen {
+        padding: 15px;
+        max-width: 98%;
+    }
+
+    .scammer-username {
+        font-size: 16px;
+    }
+
+    .security-status {
+        font-size: 22px;
+    }
+
+    .scammer-test-header h2 {
+        font-size: 18px;
     }
 }
