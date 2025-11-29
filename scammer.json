@@ -33,5 +33,15 @@
     "id": "805ca5d6b9504b5c9b5ca40323fd7138",
     "açıklama": "blood- adlı kullanıcı, şu ana kadar eşya veya evcil hayvan çalma girişiminde bulunmadığı gözlemlenmiş bir hesaptır.",
     "güvenlik": "yeşil"
+  },
+  {
+    "id": "38eb277f1ab3407fab99fb4d0b1e2804",
+    "açıklama": "OBFX adlı kullanıcı, şu ana kadar herhangi bir eşya veya evcil hayvan çalma girişiminde bulunmamıştır.",
+    "güvenlik": "yeşil"
+  },
+  {
+    "id": "44c126694da84b7aaf929f2f5e5c58ba",
+    "açıklama": "BluecinsMSP adlı kullanıcı, adına sahte hesaplar açılsa da suç ile ilgili işlere karışmamıştır.",
+    "güvenlik": "yeşil"
   }
 ]
