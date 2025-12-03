@@ -1,5 +1,11 @@
 [
   {
+  "id": "TR|6729717",
+  "açıklama": "Bu kullanıcı, oyunlarda diğer oyuncuların evcil hayvanlarını ve eşyalarını çaldığı bildirilen, güven vermeyen bir hesaptır. Görünüşte masum davranışlar sergilese de geçmişte birçok oyuncuyu kandırdığı söylenmektedir. Tavsiye: Kesinlikle etkileşime girilmemesi, takas veya hediye tekliflerinden uzak durulması önerilir.",
+  "güvenlik": "kırmızı"
+  },
+
+  {
     "id": "47ae5a51825f474ea7ddc43e428ed833",
     "açıklama": "AlironN adlı kullanıcı, diğer oyuncuları manipüle ederek eşyalarını, kıyafetlerini ve evcil hayvanlarını çalmakla tanınıyor. Toplulukta dolandırıcı olarak biliniyor ve uygunsuz davranışlarda bulunduğu bildirilmiş.",
     "güvenlik": "kırmızı"
