@@ -46,6 +46,11 @@
     "güvenlik": "yeşil"
   },
   {
+  "id": "501bbd3368b843d9bba553f3791403f6",
+  "açıklama": "Bu kullanıcı, birden fazla bağımsız kullanıcı tarafından oyun içi varlık (pet) satışı sonrası ürün teslim edilmediği gerekçesiyle dolandırıcılık şüphesiyle raporlanmıştır. Oyun dışına yönlendirme (Instagram/IBAN), ödeme alındıktan sonra bahane ileri sürülmesi ve iletişimin kesilmesi gibi tekrar eden davranışlar bildirilmiştir. Paylaşılan mesaj kayıtları ve ödeme kanıtları doğrultusunda yüksek riskli olarak değerlendirilmiştir.",
+  "güvenlik": "kırmızı"
+  },
+  {
     "id": "44c126694da84b7aaf929f2f5e5c58ba",
     "açıklama": "BluecinsMSP adlı kullanıcı, adına sahte hesaplar açılsa da suç ile ilgili işlere karışmamıştır.",
     "güvenlik": "yeşil"
