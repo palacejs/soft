@@ -404,7 +404,6 @@ body {
     height: 75px;
     border-radius: 50%;
     display: flex;
-    align-items: center;
     justify-content: space-around;
     background: linear-gradient(135deg, #ff9800, #f57c00);
     color: white;
